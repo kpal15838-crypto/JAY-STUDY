@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🎓 Student Management System</h1>
+        <p>Manage Students, Fees, Offers and Signatures</p>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+            <h2>👨‍🎓 Student Registration</h2>
+            <p>Add student name and roll number.</p>
+            <a href="/students">Add Student</a>
+        </div>
+
+        <div class="card">
+            <h2>💰 Fees Submit</h2>
+            <p>Manage student fees and payment details.</p>
+            <a href="/fees">Submit Fees</a>
+        </div>
+
+        <div class="card">
+            <h2>🎁 Offers</h2>
+            <p>Manage student offers and discounts.</p>
+            <a href="#">View Offers</a>
+        </div>
+
+        <div class="card">
+            <h2>✍️ Online Signature</h2>
+            <p>Add student's digital signature.</p>
+            <a href="/signature">Add Signature</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

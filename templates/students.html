@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>👨‍🎓 Student Registration</h1>
+        <p>Add a new student</p>
+    </div>
+
+    <div class="form-container">
+
+        <!-- Student Form -->
+        <form method="POST">
+
+            <label>Student Name</label>
+            <input type="text" name="name" placeholder="Enter student name" required>
+
+            <label>Roll Number</label>
+            <input type="text" name="roll_number" placeholder="Enter roll number" required>
+
+            <label>Course / Class</label>
+            <input type="text" name="course" placeholder="Enter course or class">
+
+            <label>Mobile Number</label>
+            <input type="text" name="mobile" placeholder="Enter mobile number">
+
+            <button type="submit">Submit Student</button>
+
+        </form>
+
+        <br>
+
+        <!-- Registered Students -->
+        <h2>Registered Students</h2>
+
+        <table border="1" cellpadding="10">
+
+            <tr>
+                <th>Student Name</th>
+                <th>Roll Number</th>
+                <th>Course / Class</th>
+                <th>Mobile Number</th>
+            </tr>
+
+            {% for student in students %}
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ student.roll_number }}</td>
+                <td>{{ student.course }}</td>
+                <td>{{ student.mobile }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+        <br>
+
+        <a href="/">⬅ Back to Dashboard</a>
+
+    </div>
+
+</body>

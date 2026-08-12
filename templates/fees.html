@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fees Submission</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>💰 Fees Submission</h1>
+        <p>Submit student fees</p>
+    </div>
+
+    <div class="form-container">
+
+        <form method="POST">
+
+            <label>Student Name</label>
+            <input type="text" name="name"
+                   placeholder="Enter student name" required>
+
+            <label>Roll Number</label>
+            <input type="text" name="roll_number"
+                   placeholder="Enter roll number" required>
+
+            <label>Total Fees</label>
+            <input type="number" name="total_fees"
+                   placeholder="Enter total fees" required>
+
+            <label>Submitted Fees</label>
+            <input type="number" name="submitted_fees"
+                   placeholder="Enter submitted fees" required>
+
+            <button type="submit">Submit Payment</button>
+
+        </form>
+
+        <h2>Payment Details</h2>
+
+<table border="1" cellpadding="10">
+
+    <tr>
+        <th>Student Name</th>
+        <th>Roll Number</th>
+        <th>Total Fees</th>
+        <th>Submitted Fees</th>
+        <th>Remaining Fees</th>
+    </tr>
+
+    {% for fee in fees %}
+    <tr>
+        <td>{{ fee.name }}</td>
+        <td>{{ fee.roll_number }}</td>
+        <td>₹{{ fee.total_fees }}</td>
+        <td>₹{{ fee.submitted_fees }}</td>
+        <td>₹{{ fee.remaining_fees }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+        <br>
+
+        <a href="/">⬅ Back to Dashboard</a>
+
+    </div>
+
+</body>
+</html>

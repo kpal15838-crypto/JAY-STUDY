@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Signature</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            box-sizing: border-box;
+        }
+
+        canvas {
+            border: 2px solid #333;
+            width: 100%;
+            height: 250px;
+            cursor: crosshair;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin-top: 15px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        #savedSignature {
+            max-width: 100%;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>✍️ Online Signature</h1>
+        <p>Draw and save your digital signature</p>
+    </div>
+
+    <div class="container">
+
+        <label>Student Name</label>
+        <input type="text" id="studentName"
+               placeholder="Enter student name">
+
+        <label>Roll Number</label>
+        <input type="text" id="rollNumber"
+               placeholder="Enter roll number">
+
+        <h3>Draw Your Signature</h3>
+
+        <canvas id="signatureCanvas"></canvas>
+
+        <br>
+
+        <button type="button" onclick="clearSignature()">
+            Clear Signature
+        </button>
+
+        <button type="button" onclick="saveSignature()">
+            Save Signature
+        </button>
+
+        <hr>
+
+        <h3>Saved Signature</h3>
+
+        <img id="savedSignature">
+
+        <p id="signatureDate"></p>
+
+        <br>
+
+        <a href="/">⬅ Back to Dashboard</a>
+
+    </div>
+
+
+    <script>
+
+        const canvas = document.getElementById("signatureCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 650;
+        canvas.height = 250;
+
+        let drawing = false;
+
+
+        canvas.addEventListener("mousedown", function(e) {
+
+            drawing = true;
+
+            const rect = canvas.getBoundingClientRect();
+
+            ctx.beginPath();
+
+            ctx.moveTo(
+                e.clientX - rect.left,
+                e.clientY - rect.top
+            );
+
+        });
+
+
+        canvas.addEventListener("mousemove", function(e) {
+
+            if (!drawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+
+            ctx.lineTo(
+                e.clientX - rect.left,
+                e.clientY - rect.top
+            );
+
+            ctx.stroke();
+
+        });
+
+
+        canvas.addEventListener("mouseup", function() {
+            drawing = false;
+        });
+
+
+        canvas.addEventListener("mouseleave", function() {
+            drawing = false;
+        });
+
+
+        function clearSignature() {
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+        }
+
+
+        function saveSignature() {
+
+            const studentName =
+                document.getElementById("studentName").value;
+
+            const rollNumber =
+                document.getElementById("rollNumber").value;
+
+
+            if (studentName === "" || rollNumber === "") {
+
+                alert("Please enter Student Name and Roll Number!");
+
+                return;
+            }
+
+
+            const signatureData =
+                canvas.toDataURL("image/png");
+
+            const saveDate =
+                new Date().toLocaleString();
+
+
+            localStorage.setItem(
+                "studentSignature",
+                signatureData
+            );
+
+            localStorage.setItem(
+                "studentName",
+                studentName
+            );
+
+            localStorage.setItem(
+                "rollNumber",
+                rollNumber
+            );
+
+            localStorage.setItem(
+                "signatureDate",
+                saveDate
+            );
+
+
+            document.getElementById("savedSignature").src =
+                signatureData;
+
+            document.getElementById("signatureDate").innerText =
+                "Saved Date & Time: " + saveDate;
+
+
+            alert("Signature Saved Successfully!");
+
+        }
+
+
+        window.onload = function() {
+
+            const savedSignature =
+                localStorage.getItem("studentSignature");
+
+            const savedDate =
+                localStorage.getItem("signatureDate");
+
+
+            if (savedSignature) {
+
+                document.getElementById("savedSignature").src =
+                    savedSignature;
+
+            }
+
+
+            if (savedDate) {
+
+                document.getElementById("signatureDate").innerText =
+                    "Saved Date & Time: " + savedDate;
+
+            }
+
+        };
+
+    </script>
+
+</body>
+</html>
