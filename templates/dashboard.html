@@ -1,44 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Student Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JAY-STUDY</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        .header p {
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-card h2 {
+            color: #1e3a8a;
+        }
+
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-size: 17px;
+        }
+
+        .btn:hover {
+            background: #172554;
+        }
+
+        .admin-btn {
+            background: #dc2626;
+        }
+
+        .admin-btn:hover {
+            background: #991b1b;
+        }
+
+        .register-btn {
+            background: #059669;
+        }
+
+        .register-btn:hover {
+            background: #047857;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="header">
-        <h1>🎓 Student Management System</h1>
-        <p>Manage Students, Fees, Offers and Signatures</p>
+        <h1>📚 JAY-STUDY</h1>
+        <p>Student Management & Study Platform</p>
     </div>
 
     <div class="container">
 
-        <div class="card">
-            <h2>👨‍🎓 Student Registration</h2>
-            <p>Add student name and roll number.</p>
-            <a href="/students">Add Student</a>
-        </div>
+        <div class="welcome-card">
 
-        <div class="card">
-            <h2>💰 Fees Submit</h2>
-            <p>Manage student fees and payment details.</p>
-            <a href="/fees">Submit Fees</a>
-        </div>
+            <h2>Welcome to JAY-STUDY</h2>
 
-        <div class="card">
-            <h2>🎁 Offers</h2>
-            <p>Manage student offers and discounts.</p>
-            <a href="#">View Offers</a>
-        </div>
+            <p>
+                Register, login, manage student information,
+                fees and question papers.
+            </p>
 
-        <div class="card">
-            <h2>✍️ Online Signature</h2>
-            <p>Add student's digital signature.</p>
-            <a href="/signature">Add Signature</a>
+            <div class="buttons">
+
+                <a href="/register" class="btn register-btn">
+                    👤 User Registration
+                </a>
+
+                <a href="/login" class="btn">
+                    🔑 User Login
+                </a>
+
+                <a href="/admin" class="btn admin-btn">
+                    🔐 Admin Login
+                </a>
+
+            </div>
+
         </div>
 
     </div>
 
+    <div class="footer">
+        © 2026 JAY-STUDY | All Rights Reserved
+    </div>
+
 </body>
+
 </html>

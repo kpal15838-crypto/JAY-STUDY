@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Panel | JAY-STUDY</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 15px;
+        }
+
+        .logout {
+            display: inline-block;
+            background: #dc2626;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 25px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        h2 {
+            color: #1e3a8a;
+            margin-top: 0;
+        }
+
+        input {
+            padding: 12px;
+            margin: 5px;
+            width: 220px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #172554;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
+        }
+
+        .empty-message {
+            color: #777;
+        }
+
+        .paid {
+            color: green;
+            font-weight: bold;
+        }
+
+        .pending {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>🔐 JAY-STUDY Admin Panel</h1>
+
+        <a href="/logout" class="logout">Logout</a>
+    </div>
+
+
+    <div class="container">
+
+        <!-- STUDENT REGISTRATION -->
+
+        <div class="card">
+
+            <h2>🎓 Student Registration</h2>
+
+            <form action="/students" method="POST">
+
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Student Name"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="roll_number"
+                    placeholder="Roll Number"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="course"
+                    placeholder="Course"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="mobile"
+                    placeholder="Mobile Number"
+                    required
+                >
+
+                <button type="submit">
+                    Register Student
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ADD FEES -->
+
+        <div class="card">
+
+            <h2>💰 Add Student Fees</h2>
+
+            <form action="/fees" method="POST">
+
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Student Name"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="roll_number"
+                    placeholder="Roll Number"
+                    required
+                >
+
+                <input
+                    type="number"
+                    name="total_fees"
+                    placeholder="Total Fees"
+                    required
+                >
+
+                <input
+                    type="number"
+                    name="submitted_fees"
+                    placeholder="Submitted Fees"
+                    required
+                >
+
+                <button type="submit">
+                    Add Fees
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ADD QUESTION PAPER -->
+
+        <div class="card">
+
+            <h2>📄 Add Question Paper</h2>
+
+            <form action="/add-question-paper" method="POST">
+
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Question Paper Title"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="subject"
+                    placeholder="Subject"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="year"
+                    placeholder="Year"
+                    required
+                >
+
+                <button type="submit">
+                    Add Question Paper
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- QUESTION PAPERS LIST -->
+
+        <div class="card">
+
+            <h2>📋 Question Papers</h2>
+
+            {% if question_papers %}
+
+            <table>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Question Paper Title</th>
+                    <th>Subject</th>
+                    <th>Year</th>
+                </tr>
+
+                {% for paper in question_papers %}
+
+                <tr>
+                    <td>{{ paper.id }}</td>
+                    <td>{{ paper.title }}</td>
+                    <td>{{ paper.subject }}</td>
+                    <td>{{ paper.year }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p class="empty-message">
+                No question papers available.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- REGISTERED USERS -->
+
+        <div class="card">
+
+            <h2>👥 Registered Users</h2>
+
+            {% if users %}
+
+            <table>
+
+                <tr>
+                    <th>Username</th>
+                </tr>
+
+                {% for user in users %}
+
+                <tr>
+                    <td>{{ user.username }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p class="empty-message">
+                No users registered yet.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- STUDENTS DATA -->
+
+        <div class="card">
+
+            <h2>🎓 Students Data</h2>
+
+            {% if students %}
+
+            <table>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>Course</th>
+                    <th>Mobile</th>
+                </tr>
+
+                {% for student in students %}
+
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ student.course }}</td>
+                    <td>{{ student.mobile }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p class="empty-message">
+                No student data available.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- FEES RECORDS -->
+
+        <div class="card">
+
+            <h2>💳 Fees Records</h2>
+
+            {% if fees %}
+
+            <table>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>Total Fees</th>
+                    <th>Submitted Fees</th>
+                    <th>Remaining Fees</th>
+                    <th>Status</th>
+                </tr>
+
+                {% for fee in fees %}
+
+                <tr>
+                    <td>{{ fee.name }}</td>
+                    <td>{{ fee.roll_number }}</td>
+                    <td>₹ {{ fee.total_fees }}</td>
+                    <td>₹ {{ fee.submitted_fees }}</td>
+                    <td>₹ {{ fee.remaining_fees }}</td>
+
+                    <td>
+
+                        {% if fee.remaining_fees == 0 %}
+
+                        <span class="paid">Paid</span>
+
+                        {% else %}
+
+                        <span class="pending">Pending</span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p class="empty-message">
+                No fees records available.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
