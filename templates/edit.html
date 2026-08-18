@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Student | JAY-STUDY</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #1e3a8a;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>✏️ Edit Student</h1>
+
+    <form method="POST">
+
+        <label>Student Name</label>
+
+        <input
+            type="text"
+            name="name"
+            value="{{ student.name }}"
+            required
+        >
+
+        <label>Roll Number</label>
+
+        <input
+            type="text"
+            name="roll_number"
+            value="{{ student.roll_number }}"
+            required
+        >
+
+        <label>Course / Class</label>
+
+        <input
+            type="text"
+            name="course"
+            value="{{ student.course }}"
+            required
+        >
+
+        <label>Mobile Number</label>
+
+        <input
+            type="text"
+            name="mobile"
+            value="{{ student.mobile }}"
+            required
+        >
+
+        <button type="submit">
+            💾 Update Student
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/admin-panel">
+        ⬅ Back to Admin Panel
+    </a>
+
+</div>
+
+</body>
+
+</html>

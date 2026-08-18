@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Question Paper | JAY-STUDY</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 20px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 25px;
+            margin-left: 10px;
+            padding: 12px 20px;
+            background: #1e3a8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>📄 Edit Question Paper</h1>
+    </div>
+
+    <div class="container">
+
+        <form method="POST">
+
+            <label>Question Paper Title</label>
+            <input
+                type="text"
+                name="title"
+                value="{{ paper.title }}"
+                required
+            >
+
+            <label>Subject</label>
+            <input
+                type="text"
+                name="subject"
+                value="{{ paper.subject }}"
+                required
+            >
+
+            <label>Year</label>
+            <input
+                type="text"
+                name="year"
+                value="{{ paper.year }}"
+                required
+            >
+
+            <button type="submit">
+                💾 Update Question Paper
+            </button>
+
+            <a href="/admin-panel">
+                ⬅ Back
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

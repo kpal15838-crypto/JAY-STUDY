@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Fees | JAY-STUDY</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button, a {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button {
+            background: #16a34a;
+        }
+
+        a {
+            background: #1e3a8a;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>💰 Edit Fees</h1>
+    </div>
+
+    <div class="container">
+
+        <form method="POST">
+
+            <label>Student Name</label>
+            <input type="text" name="name"
+                   value="{{ fee.name }}" required>
+
+            <label>Roll Number</label>
+            <input type="text" name="roll_number"
+                   value="{{ fee.roll_number }}" required>
+
+            <label>Total Fees</label>
+            <input type="number" name="total_fees"
+                   value="{{ fee.total_fees }}" required>
+
+            <label>Submitted Fees</label>
+            <input type="number" name="submitted_fees"
+                   value="{{ fee.submitted_fees }}" required>
+
+            <button type="submit">
+                💾 Update Fees
+            </button>
+
+            <a href="/admin-panel">
+                ⬅ Back
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+</html>
