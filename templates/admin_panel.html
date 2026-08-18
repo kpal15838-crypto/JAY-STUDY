@@ -136,6 +136,7 @@
             padding: 12px;
             border: 1px solid #ddd;
             text-align: left;
+            vertical-align: middle;
         }
 
         th {
@@ -203,10 +204,25 @@
             border-radius: 5px;
         }
 
+        .view-btn:hover {
+            background: #1d4ed8;
+        }
+
         .signature-image {
-            width: 200px;
+            width: 220px;
             max-width: 100%;
-            border: 1px solid #ccc;
+            min-height: 80px;
+            height: auto;
+            display: block;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .no-signature {
+            color: #dc2626;
+            font-weight: bold;
         }
 
         .action-buttons {
@@ -247,7 +263,9 @@
 
         <h1>🔐 JAY-STUDY Admin Panel</h1>
 
-        <a href="/logout" class="logout">Logout</a>
+        <a href="/logout" class="logout">
+            Logout
+        </a>
 
     </div>
 
@@ -309,33 +327,25 @@
 
             <form action="/students" method="POST">
 
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Student Name"
-                    required
-                >
+                <input type="text"
+                       name="name"
+                       placeholder="Student Name"
+                       required>
 
-                <input
-                    type="text"
-                    name="roll_number"
-                    placeholder="Roll Number"
-                    required
-                >
+                <input type="text"
+                       name="roll_number"
+                       placeholder="Roll Number"
+                       required>
 
-                <input
-                    type="text"
-                    name="course"
-                    placeholder="Course"
-                    required
-                >
+                <input type="text"
+                       name="course"
+                       placeholder="Course"
+                       required>
 
-                <input
-                    type="text"
-                    name="mobile"
-                    placeholder="Mobile Number"
-                    required
-                >
+                <input type="text"
+                       name="mobile"
+                       placeholder="Mobile Number"
+                       required>
 
                 <button type="submit">
                     Register Student
@@ -354,33 +364,25 @@
 
             <form action="/fees" method="POST">
 
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Student Name"
-                    required
-                >
+                <input type="text"
+                       name="name"
+                       placeholder="Student Name"
+                       required>
 
-                <input
-                    type="text"
-                    name="roll_number"
-                    placeholder="Roll Number"
-                    required
-                >
+                <input type="text"
+                       name="roll_number"
+                       placeholder="Roll Number"
+                       required>
 
-                <input
-                    type="number"
-                    name="total_fees"
-                    placeholder="Total Fees"
-                    required
-                >
+                <input type="number"
+                       name="total_fees"
+                       placeholder="Total Fees"
+                       required>
 
-                <input
-                    type="number"
-                    name="submitted_fees"
-                    placeholder="Submitted Fees"
-                    required
-                >
+                <input type="number"
+                       name="submitted_fees"
+                       placeholder="Submitted Fees"
+                       required>
 
                 <button type="submit">
                     Add Fees
@@ -397,49 +399,30 @@
 
             <h2>📄 Add Question Paper</h2>
 
-            <form
-                action="{{ url_for('add_question_paper') }}"
-                method="POST"
-            >
+            <form action="{{ url_for('add_question_paper') }}"
+                  method="POST">
 
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="Question Paper Title"
-                    required
-                >
+                <input type="text"
+                       name="title"
+                       placeholder="Question Paper Title"
+                       required>
 
-                <input
-                    type="text"
-                    name="subject"
-                    placeholder="Subject"
-                    required
-                >
+                <input type="text"
+                       name="subject"
+                       placeholder="Subject"
+                       required>
 
-                <input
-                    type="text"
-                    name="year"
-                    placeholder="Year"
-                    required
-                >
+                <input type="text"
+                       name="year"
+                       placeholder="Year"
+                       required>
 
                 <br><br>
 
                 <textarea
                     name="questions"
-                    placeholder="Enter questions here...
-
-Example:
-
-1. What is Python?
-
-2. Explain Flask.
-
-3. What is Database?
-
-4. What is HTML?"
-                    required
-                ></textarea>
+                    placeholder="Enter questions here..."
+                    required></textarea>
 
                 <br><br>
 
@@ -458,13 +441,11 @@ Example:
 
             <h2>📋 Question Papers</h2>
 
-            <input
-                type="text"
-                class="search-box"
-                placeholder="🔍 Search Question Paper..."
-                onkeyup="searchTable('questionSearch', 'questionTable')"
-                id="questionSearch"
-            >
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search Question Paper..."
+                   onkeyup="searchTable('questionSearch', 'questionTable')"
+                   id="questionSearch">
 
             {% if question_papers %}
 
@@ -483,41 +464,30 @@ Example:
                 <tr>
 
                     <td>{{ paper.id }}</td>
-
                     <td>{{ paper.title }}</td>
-
                     <td>{{ paper.subject }}</td>
-
                     <td>{{ paper.year }}</td>
 
                     <td>
 
                         <div class="action-buttons">
 
-                            <a
-                                href="/question-paper/{{ paper.id }}"
-                                class="view-btn"
-                            >
+                            <a href="/question-paper/{{ paper.id }}"
+                               class="view-btn">
                                 👁️ View
                             </a>
 
-                            <a
-                                href="/edit-question-paper/{{ paper.id }}"
-                                class="edit-btn"
-                            >
+                            <a href="/edit-question-paper/{{ paper.id }}"
+                               class="edit-btn">
                                 ✏️ Edit
                             </a>
 
-                            <form
-                                action="/delete-question-paper/{{ paper.id }}"
-                                method="POST"
-                                onsubmit="return confirm('Delete this question paper?')"
-                            >
+                            <form action="/delete-question-paper/{{ paper.id }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Delete this question paper?')">
 
-                                <button
-                                    type="submit"
-                                    class="delete-btn"
-                                >
+                                <button type="submit"
+                                        class="delete-btn">
                                     🗑️ Delete
                                 </button>
 
@@ -550,13 +520,11 @@ Example:
 
             <h2>👥 Registered Users</h2>
 
-            <input
-                type="text"
-                class="search-box"
-                placeholder="🔍 Search User..."
-                onkeyup="searchTable('userSearch', 'userTable')"
-                id="userSearch"
-            >
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search User..."
+                   onkeyup="searchTable('userSearch', 'userTable')"
+                   id="userSearch">
 
             {% if users %}
 
@@ -573,21 +541,16 @@ Example:
                 <tr>
 
                     <td>{{ user.id }}</td>
-
                     <td>{{ user.username }}</td>
 
                     <td>
 
-                        <form
-                            action="/delete-user/{{ user.id }}"
-                            method="POST"
-                            onsubmit="return confirm('Delete this user?')"
-                        >
+                        <form action="/delete-user/{{ user.id }}"
+                              method="POST"
+                              onsubmit="return confirm('Delete this user?')">
 
-                            <button
-                                type="submit"
-                                class="delete-btn"
-                            >
+                            <button type="submit"
+                                    class="delete-btn">
                                 🗑️ Delete
                             </button>
 
@@ -618,13 +581,11 @@ Example:
 
             <h2>🎓 Students Data</h2>
 
-            <input
-                type="text"
-                class="search-box"
-                placeholder="🔍 Search Student..."
-                onkeyup="searchTable('studentSearch', 'studentTable')"
-                id="studentSearch"
-            >
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search Student..."
+                   onkeyup="searchTable('studentSearch', 'studentTable')"
+                   id="studentSearch">
 
             {% if students %}
 
@@ -653,23 +614,17 @@ Example:
 
                         <div class="action-buttons">
 
-                            <a
-                                href="/edit-student/{{ student.id }}"
-                                class="edit-btn"
-                            >
+                            <a href="/edit-student/{{ student.id }}"
+                               class="edit-btn">
                                 ✏️ Edit
                             </a>
 
-                            <form
-                                action="/delete-student/{{ student.id }}"
-                                method="POST"
-                                onsubmit="return confirm('Delete this student?')"
-                            >
+                            <form action="/delete-student/{{ student.id }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Delete this student?')">
 
-                                <button
-                                    type="submit"
-                                    class="delete-btn"
-                                >
+                                <button type="submit"
+                                        class="delete-btn">
                                     🗑️ Delete
                                 </button>
 
@@ -702,13 +657,11 @@ Example:
 
             <h2>💳 Fees Records</h2>
 
-            <input
-                type="text"
-                class="search-box"
-                placeholder="🔍 Search Fees..."
-                onkeyup="searchTable('feesSearch', 'feesTable')"
-                id="feesSearch"
-            >
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search Fees..."
+                   onkeyup="searchTable('feesSearch', 'feesTable')"
+                   id="feesSearch">
 
             {% if fees %}
 
@@ -739,15 +692,11 @@ Example:
 
                         {% if fee.remaining_fees == 0 %}
 
-                            <span class="paid">
-                                Paid
-                            </span>
+                            <span class="paid">Paid</span>
 
                         {% else %}
 
-                            <span class="pending">
-                                Pending
-                            </span>
+                            <span class="pending">Pending</span>
 
                         {% endif %}
 
@@ -760,12 +709,12 @@ Example:
 
                             {% if student.roll_number == fee.roll_number %}
 
-                                <a
-                                    class="whatsapp-btn"
-                                    target="_blank"
-                                    href="https://wa.me/91{{ student.mobile }}?text=Hello%20{{ student.name }}%2C%0A%0AFees%20Reminder%0A%0ARemaining%20Fees%3A%20₹{{ fee.remaining_fees }}%0A%0APlease%20submit%20your%20fees.%0A%0AThank%20You%2C%20JAY-STUDY"
-                                >
+                                <a class="whatsapp-btn"
+                                   target="_blank"
+                                   href="https://wa.me/91{{ student.mobile }}?text=Hello%20{{ student.name }}%2C%0A%0AFees%20Reminder%0A%0ARemaining%20Fees%3A%20₹{{ fee.remaining_fees }}%0A%0APlease%20submit%20your%20fees.%0A%0AThank%20You%2C%20JAY-STUDY">
+
                                     📱 WhatsApp
+
                                 </a>
 
                             {% endif %}
@@ -779,23 +728,17 @@ Example:
 
                         <div class="action-buttons">
 
-                            <a
-                                href="/edit-fee/{{ fee.id }}"
-                                class="edit-btn"
-                            >
+                            <a href="/edit-fee/{{ fee.id }}"
+                               class="edit-btn">
                                 ✏️ Edit
                             </a>
 
-                            <form
-                                action="/delete-fee/{{ fee.id }}"
-                                method="POST"
-                                onsubmit="return confirm('Delete this fees record?')"
-                            >
+                            <form action="/delete-fee/{{ fee.id }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Delete this fees record?')">
 
-                                <button
-                                    type="submit"
-                                    class="delete-btn"
-                                >
+                                <button type="submit"
+                                        class="delete-btn">
                                     🗑️ Delete
                                 </button>
 
@@ -828,19 +771,18 @@ Example:
 
             <h2>✍️ Student Signatures</h2>
 
-            <input
-                type="text"
-                class="search-box"
-                placeholder="🔍 Search Signature..."
-                onkeyup="searchTable('signatureSearch', 'signatureTable')"
-                id="signatureSearch"
-            >
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search Signature..."
+                   onkeyup="searchTable('signatureSearch', 'signatureTable')"
+                   id="signatureSearch">
 
             {% if signatures %}
 
             <table id="signatureTable">
 
                 <tr>
+                    <th>ID</th>
                     <th>Student Name</th>
                     <th>Roll Number</th>
                     <th>Signature</th>
@@ -852,20 +794,35 @@ Example:
 
                 <tr>
 
+                    <td>{{ signature.id }}</td>
+
                     <td>{{ signature.student_name }}</td>
+
                     <td>{{ signature.roll_number }}</td>
 
                     <td>
 
-                        <img
-                            src="{{ signature.signature_data }}"
-                            alt="Student Signature"
-                            class="signature-image"
-                        >
+                        {% if signature.signature_data %}
+
+                            <img
+                                src="{{ signature.signature_data | safe }}"
+                                alt="Student Signature"
+                                class="signature-image"
+                            >
+
+                        {% else %}
+
+                            <span class="no-signature">
+                                No Signature Found
+                            </span>
+
+                        {% endif %}
 
                     </td>
 
-                    <td>{{ signature.created_at }}</td>
+                    <td>
+                        {{ signature.created_at }}
+                    </td>
 
                     <td>
 
@@ -902,6 +859,7 @@ Example:
 
         </div>
 
+
     </div>
 
 
@@ -910,8 +868,11 @@ Example:
         function searchTable(inputId, tableId) {
 
             let input = document.getElementById(inputId);
+
             let filter = input.value.toUpperCase();
+
             let table = document.getElementById(tableId);
+
             let rows = table.getElementsByTagName("tr");
 
             for (let i = 1; i < rows.length; i++) {
@@ -919,9 +880,13 @@ Example:
                 let text = rows[i].innerText.toUpperCase();
 
                 if (text.indexOf(filter) > -1) {
+
                     rows[i].style.display = "";
+
                 } else {
+
                     rows[i].style.display = "none";
+
                 }
 
             }
@@ -931,4 +896,5 @@ Example:
     </script>
 
 </body>
+
 </html>

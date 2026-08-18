@@ -2,8 +2,11 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>User Panel | JAY-STUDY</title>
 
@@ -46,7 +49,7 @@
 
         .container {
             width: 90%;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: auto;
             padding: 30px 0;
         }
@@ -55,7 +58,7 @@
             background: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow-x: auto;
         }
 
@@ -101,30 +104,69 @@
             background: #172554;
         }
 
+        .view-btn {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            padding: 9px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .view-btn:hover {
+            background: #15803d;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+            }
+
+            th,
+            td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+        }
+
     </style>
 
 </head>
 
 <body>
 
+
     <div class="header">
 
         <h1>📚 JAY-STUDY User Panel</h1>
 
-        <p>Welcome, {{ username }}!</p>
+        <p>
+            Welcome, {{ username }}!
+        </p>
 
-        <a href="/logout" class="logout">Logout</a>
+        <a href="/logout"
+           class="logout">
+            Logout
+        </a>
 
     </div>
 
 
     <div class="container">
 
-        <!-- USER SIGNATURE -->
 
-        <a href="/signature" class="signature-btn">
+        <!-- SIGNATURE BUTTON -->
+
+        <a href="/signature"
+           class="signature-btn">
+
             ✍️ Add Your Signature
+
         </a>
+
 
 
         <!-- QUESTION PAPERS -->
@@ -133,28 +175,62 @@
 
             <h2>📄 Available Question Papers</h2>
 
+
             {% if question_papers %}
 
             <table>
 
                 <tr>
+
                     <th>ID</th>
+
                     <th>Question Paper Title</th>
+
                     <th>Subject</th>
+
                     <th>Year</th>
+
+                    <th>Action</th>
+
                 </tr>
+
 
                 {% for paper in question_papers %}
 
                 <tr>
 
-                    <td>{{ paper.id }}</td>
+                    <td>
+                        {{ paper.id }}
+                    </td>
 
-                    <td>{{ paper.title }}</td>
 
-                    <td>{{ paper.subject }}</td>
+                    <td>
+                        {{ paper.title }}
+                    </td>
 
-                    <td>{{ paper.year }}</td>
+
+                    <td>
+                        {{ paper.subject }}
+                    </td>
+
+
+                    <td>
+                        {{ paper.year }}
+                    </td>
+
+
+                    <td>
+
+                        <a
+                            href="{{ url_for('view_question_paper', id=paper.id) }}"
+                            class="view-btn"
+                        >
+
+                            📖 View Questions
+
+                        </a>
+
+                    </td>
 
                 </tr>
 
@@ -162,17 +238,23 @@
 
             </table>
 
+
             {% else %}
 
             <p class="empty-message">
+
                 No question papers available right now.
+
             </p>
 
             {% endif %}
 
+
         </div>
 
+
     </div>
+
 
 </body>
 
