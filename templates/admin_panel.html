@@ -95,6 +95,18 @@
             border-radius: 5px;
         }
 
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            resize: vertical;
+            margin-top: 10px;
+        }
+
         .search-box {
             width: 100%;
             max-width: 400px;
@@ -164,10 +176,25 @@
             padding: 8px 12px;
             text-decoration: none;
             border-radius: 5px;
+            white-space: nowrap;
         }
 
         .edit-btn:hover {
             background: #15803d;
+        }
+
+        .view-btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+
+        .view-btn:hover {
+            background: #1d4ed8;
         }
 
         .delete-btn {
@@ -177,6 +204,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .delete-btn:hover {
@@ -193,6 +221,7 @@
             display: flex;
             gap: 5px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .action-buttons form {
@@ -215,6 +244,12 @@
                 align-items: stretch;
             }
 
+            .action-buttons a,
+            .action-buttons button {
+                text-align: center;
+                width: 100%;
+            }
+
         }
 
     </style>
@@ -235,7 +270,7 @@
     <div class="container">
 
 
-        <!-- 6 OVERVIEW CARDS -->
+        <!-- OVERVIEW CARDS -->
 
         <div class="stats">
 
@@ -289,17 +324,33 @@
 
             <form action="/students" method="POST">
 
-                <input type="text" name="name"
-                       placeholder="Student Name" required>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Student Name"
+                    required
+                >
 
-                <input type="text" name="roll_number"
-                       placeholder="Roll Number" required>
+                <input
+                    type="text"
+                    name="roll_number"
+                    placeholder="Roll Number"
+                    required
+                >
 
-                <input type="text" name="course"
-                       placeholder="Course" required>
+                <input
+                    type="text"
+                    name="course"
+                    placeholder="Course"
+                    required
+                >
 
-                <input type="text" name="mobile"
-                       placeholder="Mobile Number" required>
+                <input
+                    type="text"
+                    name="mobile"
+                    placeholder="Mobile Number"
+                    required
+                >
 
                 <button type="submit">
                     Register Student
@@ -318,17 +369,33 @@
 
             <form action="/fees" method="POST">
 
-                <input type="text" name="name"
-                       placeholder="Student Name" required>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Student Name"
+                    required
+                >
 
-                <input type="text" name="roll_number"
-                       placeholder="Roll Number" required>
+                <input
+                    type="text"
+                    name="roll_number"
+                    placeholder="Roll Number"
+                    required
+                >
 
-                <input type="number" name="total_fees"
-                       placeholder="Total Fees" required>
+                <input
+                    type="number"
+                    name="total_fees"
+                    placeholder="Total Fees"
+                    required
+                >
 
-                <input type="number" name="submitted_fees"
-                       placeholder="Submitted Fees" required>
+                <input
+                    type="number"
+                    name="submitted_fees"
+                    placeholder="Submitted Fees"
+                    required
+                >
 
                 <button type="submit">
                     Add Fees
@@ -347,17 +414,57 @@
 
             <form action="/add-question-paper" method="POST">
 
-                <input type="text" name="title"
-                       placeholder="Question Paper Title" required>
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Question Paper Title"
+                    required
+                >
 
-                <input type="text" name="subject"
-                       placeholder="Subject" required>
+                <input
+                    type="text"
+                    name="subject"
+                    placeholder="Subject"
+                    required
+                >
 
-                <input type="text" name="year"
-                       placeholder="Year" required>
+                <input
+                    type="text"
+                    name="year"
+                    placeholder="Year"
+                    required
+                >
+
+                <br><br>
+
+                <h3>📝 Enter Questions</h3>
+
+                <textarea
+                    name="questions"
+                    placeholder="Yahan saare questions line by line paste karein...
+
+Example:
+
+1. Bharat ki rajdhani kya hai?
+
+A. Mumbai
+B. Delhi
+C. Kolkata
+D. Chennai
+
+2. Bharat ka rashtriya pashu kaun hai?
+
+A. Sher
+B. Hathi
+C. Bagh
+D. Ghoda"
+                    required
+                ></textarea>
+
+                <br><br>
 
                 <button type="submit">
-                    Add Question Paper
+                    📄 Add Question Paper
                 </button>
 
             </form>
@@ -394,17 +501,30 @@
                 {% for paper in question_papers %}
 
                 <tr>
+
                     <td>{{ paper.id }}</td>
+
                     <td>{{ paper.title }}</td>
+
                     <td>{{ paper.subject }}</td>
+
                     <td>{{ paper.year }}</td>
 
                     <td>
 
                         <div class="action-buttons">
 
-                            <a href="/edit-question-paper/{{ paper.id }}"
-                               class="edit-btn">
+                            <a
+                                href="/question-paper/{{ paper.id }}"
+                                class="view-btn"
+                            >
+                                👁️ View
+                            </a>
+
+                            <a
+                                href="/edit-question-paper/{{ paper.id }}"
+                                class="edit-btn"
+                            >
                                 ✏️ Edit
                             </a>
 
@@ -414,8 +534,10 @@
                                 onsubmit="return confirm('Delete this question paper?')"
                             >
 
-                                <button type="submit"
-                                        class="delete-btn">
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
                                     🗑️ Delete
                                 </button>
 
@@ -469,7 +591,9 @@
                 {% for user in users %}
 
                 <tr>
+
                     <td>{{ user.id }}</td>
+
                     <td>{{ user.username }}</td>
 
                     <td>
@@ -480,8 +604,10 @@
                             onsubmit="return confirm('Delete this user?')"
                         >
 
-                            <button type="submit"
-                                    class="delete-btn">
+                            <button
+                                type="submit"
+                                class="delete-btn"
+                            >
                                 🗑️ Delete
                             </button>
 
@@ -538,17 +664,23 @@
                 <tr>
 
                     <td>{{ student.id }}</td>
+
                     <td>{{ student.name }}</td>
+
                     <td>{{ student.roll_number }}</td>
+
                     <td>{{ student.course }}</td>
+
                     <td>{{ student.mobile }}</td>
 
                     <td>
 
                         <div class="action-buttons">
 
-                            <a href="/edit-student/{{ student.id }}"
-                               class="edit-btn">
+                            <a
+                                href="/edit-student/{{ student.id }}"
+                                class="edit-btn"
+                            >
                                 ✏️ Edit
                             </a>
 
@@ -558,8 +690,10 @@
                                 onsubmit="return confirm('Delete this student?')"
                             >
 
-                                <button type="submit"
-                                        class="delete-btn">
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
                                     🗑️ Delete
                                 </button>
 
@@ -620,20 +754,28 @@
                 <tr>
 
                     <td>{{ fee.name }}</td>
+
                     <td>{{ fee.roll_number }}</td>
+
                     <td>₹ {{ fee.total_fees }}</td>
+
                     <td>₹ {{ fee.submitted_fees }}</td>
+
                     <td>₹ {{ fee.remaining_fees }}</td>
 
                     <td>
 
                         {% if fee.remaining_fees == 0 %}
 
-                        <span class="paid">Paid</span>
+                            <span class="paid">
+                                Paid
+                            </span>
 
                         {% else %}
 
-                        <span class="pending">Pending</span>
+                            <span class="pending">
+                                Pending
+                            </span>
 
                         {% endif %}
 
@@ -651,7 +793,7 @@
                                 <a
                                     class="whatsapp-btn"
                                     target="_blank"
-                                    href="https://wa.me/91{{ student.mobile }}?text=Hello%20{{ student.name }}%2C%0A%0A📚%20JAY-STUDY%20Fees%20Reminder%0A%0AYour%20monthly%20fees%20payment%20is%20due.%0ARemaining%20Fees%3A%20₹{{ fee.remaining_fees }}%0A%0APlease%20submit%20your%20fees.%0A%0AThank%20You%2C%0AJAY-STUDY"
+                                    href="https://wa.me/91{{ student.mobile }}?text=Hello%20{{ student.name }}%2C%0A%0AThis%20is%20a%20JAY-STUDY%20Fees%20Reminder.%0A%0ARemaining%20Fees%3A%20Rs.%20{{ fee.remaining_fees }}%0A%0APlease%20submit%20your%20fees.%0A%0AThank%20You%2C%0AJAY-STUDY"
                                 >
                                     📱 WhatsApp
                                 </a>
@@ -669,8 +811,10 @@
 
                         <div class="action-buttons">
 
-                            <a href="/edit-fee/{{ fee.id }}"
-                               class="edit-btn">
+                            <a
+                                href="/edit-fee/{{ fee.id }}"
+                                class="edit-btn"
+                            >
                                 ✏️ Edit
                             </a>
 
@@ -680,8 +824,10 @@
                                 onsubmit="return confirm('Delete this fees record?')"
                             >
 
-                                <button type="submit"
-                                        class="delete-btn">
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
                                     🗑️ Delete
                                 </button>
 
@@ -739,6 +885,7 @@
                 <tr>
 
                     <td>{{ signature.student_name }}</td>
+
                     <td>{{ signature.roll_number }}</td>
 
                     <td>
@@ -761,8 +908,10 @@
                             onsubmit="return confirm('Delete this signature?')"
                         >
 
-                            <button type="submit"
-                                    class="delete-btn">
+                            <button
+                                type="submit"
+                                class="delete-btn"
+                            >
                                 🗑️ Delete
                             </button>
 
