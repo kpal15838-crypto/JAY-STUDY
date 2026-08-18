@@ -23,6 +23,7 @@ def get_db_connection():
 # ==========================================
 
 def init_db():
+
     conn = get_db_connection()
 
     conn.execute("""
@@ -64,7 +65,7 @@ def init_db():
         )
     """)
 
-    # Existing database me "questions" column add karega
+    # Existing database me questions column add karega
     try:
         conn.execute("""
             ALTER TABLE question_papers
@@ -128,9 +129,11 @@ def students():
 
     conn = get_db_connection()
 
-    students_data = conn.execute(
-        "SELECT * FROM students ORDER BY id DESC"
-    ).fetchall()
+    students_data = conn.execute("""
+        SELECT *
+        FROM students
+        ORDER BY id DESC
+    """).fetchall()
 
     conn.close()
 
@@ -170,7 +173,10 @@ def edit_student(id):
 
         conn.execute("""
             UPDATE students
-            SET name = ?, roll_number = ?, course = ?, mobile = ?
+            SET name = ?,
+                roll_number = ?,
+                course = ?,
+                mobile = ?
             WHERE id = ?
         """, (
             name,
@@ -228,8 +234,13 @@ def fees():
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(request.form["total_fees"])
-        submitted_fees = float(request.form["submitted_fees"])
+        total_fees = float(
+            request.form["total_fees"]
+        )
+
+        submitted_fees = float(
+            request.form["submitted_fees"]
+        )
 
         remaining_fees = total_fees - submitted_fees
 
@@ -263,9 +274,11 @@ def fees():
 
     conn = get_db_connection()
 
-    fees_data = conn.execute(
-        "SELECT * FROM fees ORDER BY id DESC"
-    ).fetchall()
+    fees_data = conn.execute("""
+        SELECT *
+        FROM fees
+        ORDER BY id DESC
+    """).fetchall()
 
     conn.close()
 
@@ -300,15 +313,20 @@ def edit_fee(id):
 
         name = request.form["name"]
         roll_number = request.form["roll_number"]
-        total_fees = float(request.form["total_fees"])
-        submitted_fees = float(request.form["submitted_fees"])
+
+        total_fees = float(
+            request.form["total_fees"]
+        )
+
+        submitted_fees = float(
+            request.form["submitted_fees"]
+        )
 
         remaining_fees = total_fees - submitted_fees
 
         conn.execute("""
             UPDATE fees
-            SET
-                name = ?,
+            SET name = ?,
                 roll_number = ?,
                 total_fees = ?,
                 submitted_fees = ?,
@@ -391,7 +409,7 @@ def signature():
         conn.commit()
         conn.close()
 
-        return "Signature Saved Successfully!"
+        return redirect(url_for("user_panel"))
 
     return render_template("signature.html")
 
@@ -441,7 +459,9 @@ def register():
         ).fetchone()
 
         if existing_user:
+
             conn.close()
+
             return "Username already exists!"
 
         conn.execute("""
@@ -489,7 +509,9 @@ def login():
 
             session["user"] = user["username"]
 
-            return redirect(url_for("user_panel"))
+            return redirect(
+                url_for("user_panel")
+            )
 
         return "Invalid Username or Password!"
 
@@ -586,11 +608,16 @@ def admin_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        if username == "admin" and password == "Jay@12345":
+        if (
+            username == "admin"
+            and password == "Jay@12345"
+        ):
 
             session["admin"] = True
 
-            return redirect(url_for("admin_panel"))
+            return redirect(
+                url_for("admin_panel")
+            )
 
         return "Invalid Admin Username or Password!"
 
@@ -661,16 +688,24 @@ def add_question_paper():
     if "admin" not in session:
         return redirect(url_for("admin_login"))
 
-    title = request.form["title"]
-    subject = request.form["subject"]
-    year = request.form["year"]
-    questions = request.form["questions"]
+    title = request.form.get("title", "").strip()
+    subject = request.form.get("subject", "").strip()
+    year = request.form.get("year", "").strip()
+    questions = request.form.get("questions", "").strip()
+
+    if not title or not subject or not year or not questions:
+        return "Please fill all Question Paper fields!"
 
     conn = get_db_connection()
 
     conn.execute("""
         INSERT INTO question_papers
-        (title, subject, year, questions)
+        (
+            title,
+            subject,
+            year,
+            questions
+        )
         VALUES (?, ?, ?, ?)
     """, (
         title,
@@ -682,7 +717,9 @@ def add_question_paper():
     conn.commit()
     conn.close()
 
-    return redirect(url_for("admin_panel"))
+    return redirect(
+        url_for("admin_panel")
+    )
 
 
 # ==========================================
@@ -711,10 +748,14 @@ def edit_question_paper(id):
 
     if request.method == "POST":
 
-        title = request.form["title"]
-        subject = request.form["subject"]
-        year = request.form["year"]
-        questions = request.form["questions"]
+        title = request.form.get("title", "").strip()
+        subject = request.form.get("subject", "").strip()
+        year = request.form.get("year", "").strip()
+        questions = request.form.get("questions", "").strip()
+
+        if not title or not subject or not year or not questions:
+            conn.close()
+            return "Please fill all fields!"
 
         conn.execute("""
             UPDATE question_papers
@@ -735,7 +776,9 @@ def edit_question_paper(id):
         conn.commit()
         conn.close()
 
-        return redirect(url_for("admin_panel"))
+        return redirect(
+            url_for("admin_panel")
+        )
 
     conn.close()
 
@@ -768,7 +811,9 @@ def delete_question_paper(id):
     conn.commit()
     conn.close()
 
-    return redirect(url_for("admin_panel"))
+    return redirect(
+        url_for("admin_panel")
+    )
 
 
 # ==========================================
@@ -780,7 +825,9 @@ def logout():
 
     session.clear()
 
-    return redirect(url_for("home"))
+    return redirect(
+        url_for("home")
+    )
 
 
 # ==========================================
