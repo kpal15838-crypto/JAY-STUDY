@@ -59,9 +59,19 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             subject TEXT NOT NULL,
-            year TEXT NOT NULL
+            year TEXT NOT NULL,
+            questions TEXT
         )
     """)
+
+    # Existing database me "questions" column add karega
+    try:
+        conn.execute("""
+            ALTER TABLE question_papers
+            ADD COLUMN questions TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS signatures (
@@ -147,6 +157,10 @@ def edit_student(id):
         (id,)
     ).fetchone()
 
+    if student is None:
+        conn.close()
+        return "Student not found!"
+
     if request.method == "POST":
 
         name = request.form["name"]
@@ -214,13 +228,8 @@ def fees():
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(
-            request.form["total_fees"]
-        )
-
-        submitted_fees = float(
-            request.form["submitted_fees"]
-        )
+        total_fees = float(request.form["total_fees"])
+        submitted_fees = float(request.form["submitted_fees"])
 
         remaining_fees = total_fees - submitted_fees
 
@@ -283,18 +292,16 @@ def edit_fee(id):
         (id,)
     ).fetchone()
 
+    if fee is None:
+        conn.close()
+        return "Fee record not found!"
+
     if request.method == "POST":
 
         name = request.form["name"]
         roll_number = request.form["roll_number"]
-
-        total_fees = float(
-            request.form["total_fees"]
-        )
-
-        submitted_fees = float(
-            request.form["submitted_fees"]
-        )
+        total_fees = float(request.form["total_fees"])
+        submitted_fees = float(request.form["submitted_fees"])
 
         remaining_fees = total_fees - submitted_fees
 
@@ -424,9 +431,7 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        hashed_password = generate_password_hash(
-            password
-        )
+        hashed_password = generate_password_hash(password)
 
         conn = get_db_connection()
 
@@ -436,9 +441,7 @@ def register():
         ).fetchone()
 
         if existing_user:
-
             conn.close()
-
             return "Username already exists!"
 
         conn.execute("""
@@ -486,9 +489,7 @@ def login():
 
             session["user"] = user["username"]
 
-            return redirect(
-                url_for("user_panel")
-            )
+            return redirect(url_for("user_panel"))
 
         return "Invalid Username or Password!"
 
@@ -503,10 +504,7 @@ def login():
 def user_panel():
 
     if "user" not in session:
-
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
@@ -522,6 +520,34 @@ def user_panel():
         "user_panel.html",
         question_papers=question_papers_data,
         username=session["user"]
+    )
+
+
+# ==========================================
+# VIEW QUESTION PAPER
+# ==========================================
+
+@app.route("/question-paper/<int:id>")
+def view_question_paper(id):
+
+    if "user" not in session and "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+
+    paper = conn.execute(
+        "SELECT * FROM question_papers WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    conn.close()
+
+    if paper is None:
+        return "Question Paper Not Found!"
+
+    return render_template(
+        "view_question_paper.html",
+        paper=paper
     )
 
 
@@ -560,22 +586,15 @@ def admin_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        if (
-            username == "admin"
-            and password == "Jay@12345"
-        ):
+        if username == "admin" and password == "Jay@12345":
 
             session["admin"] = True
 
-            return redirect(
-                url_for("admin_panel")
-            )
+            return redirect(url_for("admin_panel"))
 
         return "Invalid Admin Username or Password!"
 
-    return render_template(
-        "admin_login.html"
-    )
+    return render_template("admin_login.html")
 
 
 # ==========================================
@@ -586,10 +605,7 @@ def admin_login():
 def admin_panel():
 
     if "admin" not in session:
-
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -639,40 +655,34 @@ def admin_panel():
 # ADD QUESTION PAPER
 # ==========================================
 
-@app.route(
-    "/add-question-paper",
-    methods=["POST"]
-)
+@app.route("/add-question-paper", methods=["POST"])
 def add_question_paper():
 
     if "admin" not in session:
-
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     title = request.form["title"]
     subject = request.form["subject"]
     year = request.form["year"]
+    questions = request.form["questions"]
 
     conn = get_db_connection()
 
     conn.execute("""
         INSERT INTO question_papers
-        (title, subject, year)
-        VALUES (?, ?, ?)
+        (title, subject, year, questions)
+        VALUES (?, ?, ?, ?)
     """, (
         title,
         subject,
-        year
+        year,
+        questions
     ))
 
     conn.commit()
     conn.close()
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -686,10 +696,7 @@ def add_question_paper():
 def edit_question_paper(id):
 
     if "admin" not in session:
-
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -698,29 +705,37 @@ def edit_question_paper(id):
         (id,)
     ).fetchone()
 
+    if paper is None:
+        conn.close()
+        return "Question Paper Not Found!"
+
     if request.method == "POST":
 
         title = request.form["title"]
         subject = request.form["subject"]
         year = request.form["year"]
+        questions = request.form["questions"]
 
         conn.execute("""
             UPDATE question_papers
-            SET title = ?, subject = ?, year = ?
+            SET
+                title = ?,
+                subject = ?,
+                year = ?,
+                questions = ?
             WHERE id = ?
         """, (
             title,
             subject,
             year,
+            questions,
             id
         ))
 
         conn.commit()
         conn.close()
 
-        return redirect(
-            url_for("admin_panel")
-        )
+        return redirect(url_for("admin_panel"))
 
     conn.close()
 
@@ -741,10 +756,7 @@ def edit_question_paper(id):
 def delete_question_paper(id):
 
     if "admin" not in session:
-
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -756,9 +768,7 @@ def delete_question_paper(id):
     conn.commit()
     conn.close()
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -770,9 +780,7 @@ def logout():
 
     session.clear()
 
-    return redirect(
-        url_for("home")
-    )
+    return redirect(url_for("home"))
 
 
 # ==========================================
