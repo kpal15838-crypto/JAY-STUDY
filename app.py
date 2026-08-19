@@ -26,6 +26,10 @@ def init_db():
 
     conn = get_db_connection()
 
+    # ------------------------------------------
+    # USERS TABLE
+    # ------------------------------------------
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +37,10 @@ def init_db():
             password TEXT NOT NULL
         )
     """)
+
+    # ------------------------------------------
+    # STUDENTS TABLE
+    # ------------------------------------------
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS students (
@@ -43,6 +51,10 @@ def init_db():
             mobile TEXT NOT NULL
         )
     """)
+
+    # ------------------------------------------
+    # FEES TABLE
+    # ------------------------------------------
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS fees (
@@ -55,6 +67,10 @@ def init_db():
         )
     """)
 
+    # ------------------------------------------
+    # QUESTION PAPERS TABLE
+    # ------------------------------------------
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS question_papers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,7 +81,7 @@ def init_db():
         )
     """)
 
-    # Existing database me questions column add karega
+    # Existing database compatibility
     try:
         conn.execute("""
             ALTER TABLE question_papers
@@ -74,6 +90,10 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
+    # ------------------------------------------
+    # SIGNATURES TABLE
+    # ------------------------------------------
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS signatures (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +101,45 @@ def init_db():
             roll_number TEXT NOT NULL,
             signature_data TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # ==========================================
+    # NEW TEST SYSTEM TABLES
+    # ==========================================
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS tests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS test_questions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            test_id INTEGER NOT NULL,
+            question TEXT NOT NULL,
+            option_a TEXT NOT NULL,
+            option_b TEXT NOT NULL,
+            option_c TEXT NOT NULL,
+            option_d TEXT NOT NULL,
+            correct_answer TEXT NOT NULL
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS test_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            test_id INTEGER NOT NULL,
+            username TEXT NOT NULL,
+            total_questions INTEGER NOT NULL,
+            correct_answers INTEGER NOT NULL,
+            wrong_answers INTEGER NOT NULL,
+            percentage REAL NOT NULL,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -117,7 +176,12 @@ def students():
             INSERT INTO students
             (name, roll_number, course, mobile)
             VALUES (?, ?, ?, ?)
-        """, (name, roll_number, course, mobile))
+        """, (
+            name,
+            roll_number,
+            course,
+            mobile
+        ))
 
         conn.commit()
         conn.close()
@@ -234,13 +298,8 @@ def fees():
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(
-            request.form["total_fees"]
-        )
-
-        submitted_fees = float(
-            request.form["submitted_fees"]
-        )
+        total_fees = float(request.form["total_fees"])
+        submitted_fees = float(request.form["submitted_fees"])
 
         remaining_fees = total_fees - submitted_fees
 
@@ -314,13 +373,8 @@ def edit_fee(id):
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(
-            request.form["total_fees"]
-        )
-
-        submitted_fees = float(
-            request.form["submitted_fees"]
-        )
+        total_fees = float(request.form["total_fees"])
+        submitted_fees = float(request.form["submitted_fees"])
 
         remaining_fees = total_fees - submitted_fees
 
@@ -536,11 +590,23 @@ def user_panel():
         ORDER BY id DESC
     """).fetchall()
 
+    tests_data = conn.execute("""
+        SELECT
+            tests.*,
+            COUNT(test_questions.id) AS question_count
+        FROM tests
+        LEFT JOIN test_questions
+        ON tests.id = test_questions.test_id
+        GROUP BY tests.id
+        ORDER BY tests.id DESC
+    """).fetchall()
+
     conn.close()
 
     return render_template(
         "user_panel.html",
         question_papers=question_papers_data,
+        tests=tests_data,
         username=session["user"]
     )
 
@@ -666,6 +732,28 @@ def admin_panel():
         ORDER BY id DESC
     """).fetchall()
 
+    tests_data = conn.execute("""
+        SELECT
+            tests.*,
+            COUNT(test_questions.id) AS question_count
+        FROM tests
+        LEFT JOIN test_questions
+        ON tests.id = test_questions.test_id
+        GROUP BY tests.id
+        ORDER BY tests.id DESC
+    """).fetchall()
+
+    test_results_data = conn.execute("""
+        SELECT
+            test_results.*,
+            tests.title,
+            tests.subject
+        FROM test_results
+        JOIN tests
+        ON test_results.test_id = tests.id
+        ORDER BY test_results.id DESC
+    """).fetchall()
+
     conn.close()
 
     return render_template(
@@ -674,7 +762,9 @@ def admin_panel():
         users=users_data,
         students=students_data,
         fees=fees_data,
-        signatures=signatures_data
+        signatures=signatures_data,
+        tests=tests_data,
+        test_results=test_results_data
     )
 
 
@@ -717,9 +807,7 @@ def add_question_paper():
     conn.commit()
     conn.close()
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -776,9 +864,7 @@ def edit_question_paper(id):
         conn.commit()
         conn.close()
 
-        return redirect(
-            url_for("admin_panel")
-        )
+        return redirect(url_for("admin_panel"))
 
     conn.close()
 
@@ -811,9 +897,310 @@ def delete_question_paper(id):
     conn.commit()
     conn.close()
 
-    return redirect(
-        url_for("admin_panel")
+    return redirect(url_for("admin_panel"))
+
+
+# ==========================================
+# ADD TEST
+# ==========================================
+
+@app.route("/add-test", methods=["POST"])
+def add_test():
+
+    if "admin" not in session:
+        return redirect(url_for("admin_login"))
+
+    title = request.form.get("title", "").strip()
+    subject = request.form.get("subject", "").strip()
+
+    questions = request.form.getlist("question[]")
+    option_a = request.form.getlist("option_a[]")
+    option_b = request.form.getlist("option_b[]")
+    option_c = request.form.getlist("option_c[]")
+    option_d = request.form.getlist("option_d[]")
+    correct_answers = request.form.getlist("correct_answer[]")
+
+    if not title or not subject:
+        return "Please enter Test Title and Subject!"
+
+    if not questions:
+        return "Please add at least one question!"
+
+    conn = get_db_connection()
+
+    cursor = conn.execute("""
+        INSERT INTO tests
+        (title, subject)
+        VALUES (?, ?)
+    """, (
+        title,
+        subject
+    ))
+
+    test_id = cursor.lastrowid
+    valid_question_count = 0
+
+    for i in range(len(questions)):
+
+        question = questions[i].strip()
+
+        if not question:
+            continue
+
+        if (
+            i >= len(option_a)
+            or i >= len(option_b)
+            or i >= len(option_c)
+            or i >= len(option_d)
+            or i >= len(correct_answers)
+        ):
+            continue
+
+        if (
+            not option_a[i].strip()
+            or not option_b[i].strip()
+            or not option_c[i].strip()
+            or not option_d[i].strip()
+            or correct_answers[i].strip().upper() not in ["A", "B", "C", "D"]
+        ):
+            continue
+
+        conn.execute("""
+            INSERT INTO test_questions
+            (
+                test_id,
+                question,
+                option_a,
+                option_b,
+                option_c,
+                option_d,
+                correct_answer
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            test_id,
+            question,
+            option_a[i].strip(),
+            option_b[i].strip(),
+            option_c[i].strip(),
+            option_d[i].strip(),
+            correct_answers[i].strip().upper()
+        ))
+
+        valid_question_count += 1
+
+    # Empty test save hone se bachata hai
+    if valid_question_count == 0:
+
+        conn.execute(
+            "DELETE FROM tests WHERE id = ?",
+            (test_id,)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return "Please add at least one complete question with options!"
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_panel"))
+
+
+# ==========================================
+# START TEST
+# ==========================================
+
+@app.route("/start-test/<int:id>")
+def start_test(id):
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+
+    test = conn.execute(
+        "SELECT * FROM tests WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    questions = conn.execute("""
+        SELECT *
+        FROM test_questions
+        WHERE test_id = ?
+        ORDER BY id ASC
+    """, (id,)).fetchall()
+
+    conn.close()
+
+    if test is None:
+        return "Test Not Found!"
+
+    if not questions:
+        return "No questions available for this test!"
+
+    return render_template(
+        "start_test.html",
+        test=test,
+        questions=questions
     )
+
+
+# ==========================================
+# SUBMIT TEST
+# ==========================================
+
+@app.route("/submit-test/<int:test_id>", methods=["POST"])
+def submit_test(test_id):
+
+    if "user" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+
+    test = conn.execute(
+        "SELECT * FROM tests WHERE id = ?",
+        (test_id,)
+    ).fetchone()
+
+    if test is None:
+        conn.close()
+        return "Test Not Found!"
+
+    questions = conn.execute("""
+        SELECT *
+        FROM test_questions
+        WHERE test_id = ?
+        ORDER BY id ASC
+    """, (test_id,)).fetchall()
+
+    total_questions = len(questions)
+    correct_answers = 0
+
+    for question in questions:
+
+        selected_answer = request.form.get(
+            f"answer_{question['id']}",
+            ""
+        ).strip().upper()
+
+        if selected_answer == question["correct_answer"].upper():
+            correct_answers += 1
+
+    wrong_answers = total_questions - correct_answers
+
+    percentage = 0
+
+    if total_questions > 0:
+        percentage = round(
+            (correct_answers / total_questions) * 100,
+            2
+        )
+
+    cursor = conn.execute("""
+        INSERT INTO test_results
+        (
+            test_id,
+            username,
+            total_questions,
+            correct_answers,
+            wrong_answers,
+            percentage
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        test_id,
+        session["user"],
+        total_questions,
+        correct_answers,
+        wrong_answers,
+        percentage
+    ))
+
+    result_id = cursor.lastrowid
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for(
+            "test_result",
+            id=result_id
+        )
+    )
+
+
+# ==========================================
+# TEST RESULT
+# ==========================================
+
+@app.route("/test-result/<int:id>")
+def test_result(id):
+
+    if "user" not in session and "admin" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+
+    result = conn.execute("""
+        SELECT
+            test_results.*,
+            tests.title,
+            tests.subject
+        FROM test_results
+        JOIN tests
+        ON test_results.test_id = tests.id
+        WHERE test_results.id = ?
+    """, (id,)).fetchone()
+
+    conn.close()
+
+    if result is None:
+        return "Result Not Found!"
+
+    # Student sirf apna result dekh sakta hai
+    if "user" in session and result["username"] != session["user"]:
+        return "You are not allowed to view this result!"
+
+    return render_template(
+        "test_result.html",
+        result=result
+    )
+
+
+# ==========================================
+# DELETE TEST
+# ==========================================
+
+@app.route("/delete-test/<int:id>", methods=["POST"])
+def delete_test(id):
+
+    if "admin" not in session:
+        return redirect(url_for("admin_login"))
+
+    conn = get_db_connection()
+
+    # Pehle related questions aur results delete honge
+    conn.execute(
+        "DELETE FROM test_questions WHERE test_id = ?",
+        (id,)
+    )
+
+    conn.execute(
+        "DELETE FROM test_results WHERE test_id = ?",
+        (id,)
+    )
+
+    conn.execute(
+        "DELETE FROM tests WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -825,9 +1212,7 @@ def logout():
 
     session.clear()
 
-    return redirect(
-        url_for("home")
-    )
+    return redirect(url_for("home"))
 
 
 # ==========================================

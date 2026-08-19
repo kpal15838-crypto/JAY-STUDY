@@ -4,7 +4,9 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Admin Panel | JAY-STUDY</title>
 
@@ -82,8 +84,12 @@
             overflow-x: auto;
         }
 
-        h2 {
+        h2,
+        h3 {
             color: #1e3a8a;
+        }
+
+        h2 {
             margin-top: 0;
         }
 
@@ -97,7 +103,7 @@
 
         textarea {
             width: 100%;
-            min-height: 250px;
+            min-height: 150px;
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -229,10 +235,53 @@
             display: flex;
             gap: 5px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .action-buttons form {
             margin: 0;
+        }
+
+        /* TEST SECTION */
+
+        .question-box {
+            border: 1px solid #d1d5db;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .question-box h3 {
+            margin-top: 0;
+        }
+
+        .question-box input {
+            width: calc(50% - 14px);
+        }
+
+        .correct-answer {
+            width: 220px;
+        }
+
+        .remove-question-btn {
+            background: #dc2626;
+            margin-top: 10px;
+        }
+
+        .add-question-btn {
+            background: #16a34a;
+            margin-top: 15px;
+        }
+
+        .result-good {
+            color: green;
+            font-weight: bold;
+        }
+
+        .result-bad {
+            color: red;
+            font-weight: bold;
         }
 
         @media (max-width: 600px) {
@@ -241,7 +290,8 @@
                 width: 95%;
             }
 
-            input {
+            input,
+            .question-box input {
                 width: 100%;
                 margin: 5px 0;
             }
@@ -295,6 +345,16 @@
             <div class="stat-card">
                 <h3>📄 Question Papers</h3>
                 <h1>{{ question_papers|length }}</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>📝 Total Tests</h3>
+                <h1>{{ tests|length }}</h1>
+            </div>
+
+            <div class="stat-card">
+                <h3>📊 Test Results</h3>
+                <h1>{{ test_results|length }}</h1>
             </div>
 
             <div class="stat-card">
@@ -431,6 +491,249 @@
                 </button>
 
             </form>
+
+        </div>
+
+
+        <!-- CREATE TEST -->
+
+        <div class="card">
+
+            <h2>📝 Create Student Test</h2>
+
+            <form action="/add-test"
+                  method="POST"
+                  id="testForm">
+
+                <input type="text"
+                       name="title"
+                       placeholder="Test Title"
+                       required>
+
+                <input type="text"
+                       name="subject"
+                       placeholder="Subject"
+                       required>
+
+
+                <div id="questionsContainer">
+
+                    <div class="question-box">
+
+                        <h3 class="question-number">
+                            Question 1
+                        </h3>
+
+                        <textarea
+                            name="question[]"
+                            placeholder="Enter Question"
+                            required></textarea>
+
+                        <br><br>
+
+                        <input type="text"
+                               name="option_a[]"
+                               placeholder="Option A"
+                               required>
+
+                        <input type="text"
+                               name="option_b[]"
+                               placeholder="Option B"
+                               required>
+
+                        <br>
+
+                        <input type="text"
+                               name="option_c[]"
+                               placeholder="Option C"
+                               required>
+
+                        <input type="text"
+                               name="option_d[]"
+                               placeholder="Option D"
+                               required>
+
+                        <br><br>
+
+                        <input type="text"
+                               name="correct_answer[]"
+                               class="correct-answer"
+                               placeholder="Correct Answer: A / B / C / D"
+                               maxlength="1"
+                               required>
+
+                    </div>
+
+                </div>
+
+
+                <button type="button"
+                        class="add-question-btn"
+                        onclick="addQuestion()">
+
+                    ➕ Add Another Question
+
+                </button>
+
+                <br><br>
+
+                <button type="submit">
+
+                    💾 Create Test
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- CREATED TESTS -->
+
+        <div class="card">
+
+            <h2>📋 Created Tests</h2>
+
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search Test..."
+                   onkeyup="searchTable('testSearch', 'testTable')"
+                   id="testSearch">
+
+            {% if tests %}
+
+            <table id="testTable">
+
+                <tr>
+                    <th>ID</th>
+                    <th>Test Title</th>
+                    <th>Subject</th>
+                    <th>Questions</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for test in tests %}
+
+                <tr>
+
+                    <td>{{ test.id }}</td>
+
+                    <td>{{ test.title }}</td>
+
+                    <td>{{ test.subject }}</td>
+
+                    <td>{{ test.question_count }}</td>
+
+                    <td>{{ test.created_at }}</td>
+
+                    <td>
+
+                        <form action="/delete-test/{{ test.id }}"
+                              method="POST"
+                              onsubmit="return confirm('Delete this test? All related questions and results will also be deleted.')">
+
+                            <button type="submit"
+                                    class="delete-btn">
+
+                                🗑️ Delete
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p class="empty-message">
+                No tests created yet.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- TEST RESULTS -->
+
+        <div class="card">
+
+            <h2>📊 Student Test Results</h2>
+
+            <input type="text"
+                   class="search-box"
+                   placeholder="🔍 Search Result..."
+                   onkeyup="searchTable('resultSearch', 'resultTable')"
+                   id="resultSearch">
+
+            {% if test_results %}
+
+            <table id="resultTable">
+
+                <tr>
+                    <th>Result ID</th>
+                    <th>Student</th>
+                    <th>Test</th>
+                    <th>Subject</th>
+                    <th>Correct</th>
+                    <th>Wrong</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Submitted At</th>
+                </tr>
+
+                {% for result in test_results %}
+
+                <tr>
+
+                    <td>{{ result.id }}</td>
+
+                    <td>{{ result.username }}</td>
+
+                    <td>{{ result.title }}</td>
+
+                    <td>{{ result.subject }}</td>
+
+                    <td class="result-good">
+                        {{ result.correct_answers }}
+                    </td>
+
+                    <td class="result-bad">
+                        {{ result.wrong_answers }}
+                    </td>
+
+                    <td>
+                        {{ result.correct_answers }}/{{ result.total_questions }}
+                    </td>
+
+                    <td>
+                        {{ result.percentage }}%
+                    </td>
+
+                    <td>
+                        {{ result.submitted_at }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+            {% else %}
+
+            <p class="empty-message">
+                No student has submitted a test yet.
+            </p>
+
+            {% endif %}
 
         </div>
 
@@ -826,17 +1129,15 @@
 
                     <td>
 
-                        <form
-                            action="/delete-signature/{{ signature.id }}"
-                            method="POST"
-                            onsubmit="return confirm('Delete this signature?')"
-                        >
+                        <form action="/delete-signature/{{ signature.id }}"
+                              method="POST"
+                              onsubmit="return confirm('Delete this signature?')">
 
-                            <button
-                                type="submit"
-                                class="delete-btn"
-                            >
+                            <button type="submit"
+                                    class="delete-btn">
+
                                 🗑️ Delete
+
                             </button>
 
                         </form>
@@ -890,6 +1191,114 @@
                 }
 
             }
+
+        }
+
+
+        function updateQuestionNumbers() {
+
+            const questions = document.querySelectorAll(".question-box");
+
+            questions.forEach(function(question, index) {
+
+                question.querySelector(".question-number").innerText =
+                    "Question " + (index + 1);
+
+            });
+
+        }
+
+
+        function addQuestion() {
+
+            const container =
+                document.getElementById("questionsContainer");
+
+            const questionBox =
+                document.createElement("div");
+
+            questionBox.className = "question-box";
+
+            questionBox.innerHTML = `
+
+                <h3 class="question-number">
+                    Question
+                </h3>
+
+                <textarea
+                    name="question[]"
+                    placeholder="Enter Question"
+                    required></textarea>
+
+                <br><br>
+
+                <input type="text"
+                       name="option_a[]"
+                       placeholder="Option A"
+                       required>
+
+                <input type="text"
+                       name="option_b[]"
+                       placeholder="Option B"
+                       required>
+
+                <br>
+
+                <input type="text"
+                       name="option_c[]"
+                       placeholder="Option C"
+                       required>
+
+                <input type="text"
+                       name="option_d[]"
+                       placeholder="Option D"
+                       required>
+
+                <br><br>
+
+                <input type="text"
+                       name="correct_answer[]"
+                       class="correct-answer"
+                       placeholder="Correct Answer: A / B / C / D"
+                       maxlength="1"
+                       required>
+
+                <br>
+
+                <button type="button"
+                        class="remove-question-btn"
+                        onclick="removeQuestion(this)">
+
+                    🗑️ Remove Question
+
+                </button>
+            `;
+
+            container.appendChild(questionBox);
+
+            updateQuestionNumbers();
+
+        }
+
+
+        function removeQuestion(button) {
+
+            const allQuestions =
+                document.querySelectorAll(".question-box");
+
+            if (allQuestions.length <= 1) {
+
+                alert(
+                    "At least one question is required!"
+                );
+
+                return;
+
+            }
+
+            button.closest(".question-box").remove();
+
+            updateQuestionNumbers();
 
         }
 
