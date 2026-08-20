@@ -26,10 +26,6 @@ def init_db():
 
     conn = get_db_connection()
 
-    # ------------------------------------------
-    # USERS TABLE
-    # ------------------------------------------
-
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,10 +33,6 @@ def init_db():
             password TEXT NOT NULL
         )
     """)
-
-    # ------------------------------------------
-    # STUDENTS TABLE
-    # ------------------------------------------
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS students (
@@ -51,10 +43,6 @@ def init_db():
             mobile TEXT NOT NULL
         )
     """)
-
-    # ------------------------------------------
-    # FEES TABLE
-    # ------------------------------------------
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS fees (
@@ -67,10 +55,6 @@ def init_db():
         )
     """)
 
-    # ------------------------------------------
-    # QUESTION PAPERS TABLE
-    # ------------------------------------------
-
     conn.execute("""
         CREATE TABLE IF NOT EXISTS question_papers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,7 +65,6 @@ def init_db():
         )
     """)
 
-    # Existing database compatibility
     try:
         conn.execute("""
             ALTER TABLE question_papers
@@ -89,10 +72,6 @@ def init_db():
         """)
     except sqlite3.OperationalError:
         pass
-
-    # ------------------------------------------
-    # SIGNATURES TABLE
-    # ------------------------------------------
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS signatures (
@@ -143,9 +122,13 @@ def init_db():
         )
     """)
 
-    # ------------------------------------------
-    # TEST ANSWER DETAILS TABLE
-    # ------------------------------------------
+    try:
+        conn.execute("""
+            ALTER TABLE test_results
+            ADD COLUMN timeout_answers INTEGER NOT NULL DEFAULT 0
+        """)
+    except sqlite3.OperationalError:
+        pass
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS test_answer_details (
@@ -158,6 +141,14 @@ def init_db():
             is_correct INTEGER NOT NULL
         )
     """)
+
+    try:
+        conn.execute("""
+            ALTER TABLE test_answer_details
+            ADD COLUMN is_timeout INTEGER NOT NULL DEFAULT 0
+        """)
+    except sqlite3.OperationalError:
+        pass
 
     conn.commit()
     conn.close()
@@ -977,7 +968,8 @@ def add_test():
             or not option_b[i].strip()
             or not option_c[i].strip()
             or not option_d[i].strip()
-            or correct_answers[i].strip().upper() not in ["A", "B", "C", "D"]
+            or correct_answers[i].strip().upper()
+            not in ["A", "B", "C", "D"]
         ):
             continue
 
@@ -1091,30 +1083,84 @@ def submit_test(test_id):
     """, (test_id,)).fetchall()
 
     total_questions = len(questions)
-    correct_answers = 0
 
-    # Count correct answers
+    correct_answers = 0
+    wrong_answers = 0
+    timeout_answers = 0
+
+
+    # ==========================================
+    # GET TIMEOUT QUESTION IDs
+    # ==========================================
+
+    timed_out_question_ids = request.form.getlist(
+        "timed_out_question"
+    )
+
+    timed_out_question_ids = {
+        str(question_id)
+        for question_id in timed_out_question_ids
+    }
+
+
+    # ==========================================
+    # COUNT RESULTS
+    # ==========================================
+
     for question in questions:
+
+        question_id = str(question["id"])
 
         selected_answer = request.form.get(
             f"answer_{question['id']}",
             ""
         ).strip().upper()
 
-        if selected_answer == question["correct_answer"].upper():
+
+        # TIME OUT
+        if question_id in timed_out_question_ids:
+
+            timeout_answers += 1
+            continue
+
+
+        # CORRECT
+        if (
+            selected_answer
+            and selected_answer ==
+            question["correct_answer"].upper()
+        ):
+
             correct_answers += 1
 
-    wrong_answers = total_questions - correct_answers
+
+        # WRONG
+        elif selected_answer:
+
+            wrong_answers += 1
+
+
+        # UNATTEMPTED
+        # Isko wrong_answers mein count nahi kiya jayega.
+        else:
+
+            pass
+
 
     percentage = 0
 
     if total_questions > 0:
+
         percentage = round(
             (correct_answers / total_questions) * 100,
             2
         )
 
-    # Save main result
+
+    # ==========================================
+    # SAVE MAIN RESULT
+    # ==========================================
+
     cursor = conn.execute("""
         INSERT INTO test_results
         (
@@ -1123,22 +1169,30 @@ def submit_test(test_id):
             total_questions,
             correct_answers,
             wrong_answers,
+            timeout_answers,
             percentage
         )
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         test_id,
         session["user"],
         total_questions,
         correct_answers,
         wrong_answers,
+        timeout_answers,
         percentage
     ))
 
     result_id = cursor.lastrowid
 
-    # Save every answer detail
+
+    # ==========================================
+    # SAVE EVERY QUESTION DETAIL
+    # ==========================================
+
     for question in questions:
+
+        question_id = str(question["id"])
 
         selected_answer = request.form.get(
             f"answer_{question['id']}",
@@ -1149,7 +1203,29 @@ def submit_test(test_id):
             "correct_answer"
         ].upper()
 
-        is_correct = 1 if selected_answer == correct_answer else 0
+
+        is_timeout = (
+            1
+            if question_id in timed_out_question_ids
+            else 0
+        )
+
+
+        if is_timeout:
+
+            selected_answer = ""
+
+
+        is_correct = (
+            1
+            if (
+                not is_timeout
+                and selected_answer
+                and selected_answer == correct_answer
+            )
+            else 0
+        )
+
 
         conn.execute("""
             INSERT INTO test_answer_details
@@ -1159,20 +1235,24 @@ def submit_test(test_id):
                 question,
                 selected_answer,
                 correct_answer,
-                is_correct
+                is_correct,
+                is_timeout
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
             result_id,
             question["id"],
             question["question"],
             selected_answer,
             correct_answer,
-            is_correct
+            is_correct,
+            is_timeout
         ))
+
 
     conn.commit()
     conn.close()
+
 
     return redirect(
         url_for(
@@ -1206,29 +1286,93 @@ def test_result(id):
     """, (id,)).fetchone()
 
     if result is None:
+
         conn.close()
+
         return "Result Not Found!"
 
-    # Student sirf apna result dekh sakta hai
-    if "user" in session and result["username"] != session["user"]:
+
+    if (
+        "user" in session
+        and result["username"] != session["user"]
+    ):
+
         conn.close()
+
         return "You are not allowed to view this result!"
 
-    # Get incorrect question details
+
+    # ==========================================
+    # CORRECT QUESTIONS
+    # ==========================================
+
+    correct_questions = conn.execute("""
+        SELECT *
+        FROM test_answer_details
+        WHERE result_id = ?
+        AND is_correct = 1
+        AND is_timeout = 0
+        ORDER BY id ASC
+    """, (id,)).fetchall()
+
+
+    # ==========================================
+    # INCORRECT QUESTIONS
+    # ==========================================
+
     wrong_questions = conn.execute("""
         SELECT *
         FROM test_answer_details
         WHERE result_id = ?
         AND is_correct = 0
+        AND is_timeout = 0
+        AND selected_answer IS NOT NULL
+        AND selected_answer != ''
         ORDER BY id ASC
     """, (id,)).fetchall()
 
+
+    # ==========================================
+    # UNATTEMPTED QUESTIONS
+    # ==========================================
+
+    unattempted_questions = conn.execute("""
+        SELECT *
+        FROM test_answer_details
+        WHERE result_id = ?
+        AND is_correct = 0
+        AND is_timeout = 0
+        AND (
+            selected_answer IS NULL
+            OR selected_answer = ''
+        )
+        ORDER BY id ASC
+    """, (id,)).fetchall()
+
+
+    # ==========================================
+    # TIME OUT QUESTIONS
+    # ==========================================
+
+    timeout_questions = conn.execute("""
+        SELECT *
+        FROM test_answer_details
+        WHERE result_id = ?
+        AND is_timeout = 1
+        ORDER BY id ASC
+    """, (id,)).fetchall()
+
+
     conn.close()
+
 
     return render_template(
         "test_result.html",
         result=result,
-        wrong_questions=wrong_questions
+        correct_questions=correct_questions,
+        wrong_questions=wrong_questions,
+        unattempted_questions=unattempted_questions,
+        timeout_questions=timeout_questions
     )
 
 
@@ -1244,13 +1388,11 @@ def delete_test(id):
 
     conn = get_db_connection()
 
-    # Delete related questions
     conn.execute(
         "DELETE FROM test_questions WHERE test_id = ?",
         (id,)
     )
 
-    # Delete answer details belonging to this test's results
     conn.execute("""
         DELETE FROM test_answer_details
         WHERE result_id IN (
@@ -1260,13 +1402,11 @@ def delete_test(id):
         )
     """, (id,))
 
-    # Delete related results
     conn.execute(
         "DELETE FROM test_results WHERE test_id = ?",
         (id,)
     )
 
-    # Delete test
     conn.execute(
         "DELETE FROM tests WHERE id = ?",
         (id,)

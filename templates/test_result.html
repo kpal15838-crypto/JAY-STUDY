@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -40,7 +39,7 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.12);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
             text-align: center;
         }
 
@@ -79,9 +78,17 @@
             color: white;
         }
 
-        .wrong-section {
+        .correct-section,
+        .wrong-section,
+        .unattempted-section,
+        .timeout-section {
             margin-top: 35px;
             text-align: left;
+        }
+
+        .correct-section h2 {
+            color: #16a34a;
+            text-align: center;
         }
 
         .wrong-section h2 {
@@ -89,16 +96,44 @@
             text-align: center;
         }
 
-        .wrong-card {
+        .unattempted-section h2 {
+            color: #64748b;
+            text-align: center;
+        }
+
+        .timeout-section h2 {
+            color: #d97706;
+            text-align: center;
+        }
+
+        .correct-card,
+        .wrong-card,
+        .unattempted-card,
+        .timeout-card {
             background: white;
-            border-left: 5px solid #dc2626;
             padding: 20px;
             margin-top: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .wrong-question {
+        .correct-card {
+            border-left: 5px solid #16a34a;
+        }
+
+        .wrong-card {
+            border-left: 5px solid #dc2626;
+        }
+
+        .unattempted-card {
+            border-left: 5px solid #64748b;
+        }
+
+        .timeout-card {
+            border-left: 5px solid #f59e0b;
+        }
+
+        .question-text {
             font-size: 18px;
             font-weight: bold;
             color: #1e3a8a;
@@ -108,6 +143,24 @@
 
         .your-answer {
             color: #dc2626;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .correct-your-answer {
+            color: #16a34a;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .unattempted-answer {
+            color: #64748b;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .timeout-answer {
+            color: #d97706;
             font-weight: bold;
             margin: 10px 0;
         }
@@ -136,6 +189,7 @@
             color: white;
             text-decoration: none;
             border-radius: 6px;
+            font-size: 17px;
         }
 
         .back-btn:hover {
@@ -157,11 +211,14 @@
                 font-size: 40px;
             }
 
-            .wrong-card {
+            .correct-card,
+            .wrong-card,
+            .unattempted-card,
+            .timeout-card {
                 padding: 15px;
             }
 
-            .wrong-question {
+            .question-text {
                 font-size: 16px;
             }
 
@@ -170,6 +227,7 @@
     </style>
 
 </head>
+
 
 <body>
 
@@ -185,68 +243,113 @@
         <div class="result-card">
 
             <h2 class="test-title">
+
                 {{ result.title }}
+
             </h2>
 
+
             <p class="subject">
+
                 Subject: {{ result.subject }}
+
             </p>
 
 
             <h3>Your Score</h3>
 
+
             <div class="percentage">
+
                 {{ result.percentage }}%
+
             </div>
 
 
             <table class="result-table">
 
                 <tr>
+
                     <th>Total Questions</th>
+
                     <td>{{ result.total_questions }}</td>
+
                 </tr>
 
+
                 <tr>
+
                     <th>Correct Answers</th>
+
                     <td>{{ result.correct_answers }}</td>
+
                 </tr>
 
+
                 <tr>
+
                     <th>Incorrect Answers</th>
+
                     <td>{{ result.wrong_answers }}</td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>Unattempted Questions</th>
+
+                    <td>{{ unattempted_questions|length }}</td>
+
+                </tr>
+
+
+                <tr>
+
+                    <th>Time Out Questions</th>
+
+                    <td>{{ result.timeout_answers }}</td>
+
                 </tr>
 
             </table>
 
 
-            {% if wrong_questions %}
+            <!-- CORRECT QUESTIONS -->
 
-            <div class="wrong-section">
+            {% if correct_questions %}
 
-                <h2>❌ Incorrect Questions</h2>
+            <div class="correct-section">
 
-                {% for item in wrong_questions %}
+                <h2>✅ Correct Questions</h2>
 
-                <div class="wrong-card">
 
-                    <div class="wrong-question">
+                {% for item in correct_questions %}
+
+                <div class="correct-card">
+
+                    <div class="question-text">
 
                         Question {{ loop.index }}:
+
                         {{ item.question }}
 
                     </div>
 
-                    <div class="your-answer">
 
-                        ❌ Your Answer:
-                        {{ item.selected_answer if item.selected_answer else "Not Answered" }}
+                    <div class="correct-your-answer">
+
+                        ✅ Your Answer:
+
+                        {{ item.selected_answer }}
 
                     </div>
 
+
                     <div class="correct-answer">
 
-                        ✅ Correct Answer:
+                        🎯 Correct Answer:
+
                         {{ item.correct_answer }}
 
                     </div>
@@ -257,8 +360,161 @@
 
             </div>
 
+            {% endif %}
 
-            {% else %}
+
+            <!-- INCORRECT QUESTIONS -->
+
+            {% if wrong_questions %}
+
+            <div class="wrong-section">
+
+                <h2>❌ Incorrect Questions</h2>
+
+
+                {% for item in wrong_questions %}
+
+                <div class="wrong-card">
+
+                    <div class="question-text">
+
+                        Question {{ loop.index }}:
+
+                        {{ item.question }}
+
+                    </div>
+
+
+                    <div class="your-answer">
+
+                        ❌ Your Answer:
+
+                        {{ item.selected_answer
+                           if item.selected_answer
+                           else "Not Answered" }}
+
+                    </div>
+
+
+                    <div class="correct-answer">
+
+                        ✅ Correct Answer:
+
+                        {{ item.correct_answer }}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- UNATTEMPTED QUESTIONS -->
+
+            {% if unattempted_questions %}
+
+            <div class="unattempted-section">
+
+                <h2>⚪ Unattempted Questions</h2>
+
+
+                {% for item in unattempted_questions %}
+
+                <div class="unattempted-card">
+
+                    <div class="question-text">
+
+                        Question {{ loop.index }}:
+
+                        {{ item.question }}
+
+                    </div>
+
+
+                    <div class="unattempted-answer">
+
+                        ⚪ Your Answer:
+
+                        Not Answered
+
+                    </div>
+
+
+                    <div class="correct-answer">
+
+                        ✅ Correct Answer:
+
+                        {{ item.correct_answer }}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- TIME OUT QUESTIONS -->
+
+            {% if timeout_questions %}
+
+            <div class="timeout-section">
+
+                <h2>⏰ Time Out Questions</h2>
+
+
+                {% for item in timeout_questions %}
+
+                <div class="timeout-card">
+
+                    <div class="question-text">
+
+                        Question {{ loop.index }}:
+
+                        {{ item.question }}
+
+                    </div>
+
+
+                    <div class="timeout-answer">
+
+                        ⏰ Your Answer:
+
+                        Time Out / Not Answered
+
+                    </div>
+
+
+                    <div class="correct-answer">
+
+                        ✅ Correct Answer:
+
+                        {{ item.correct_answer }}
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ALL CORRECT -->
+
+            {% if correct_questions
+                  and not wrong_questions
+                  and not unattempted_questions
+                  and not timeout_questions %}
 
             <div class="all-correct">
 

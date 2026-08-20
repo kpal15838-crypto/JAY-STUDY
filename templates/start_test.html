@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -58,6 +57,41 @@
             background: #475569;
         }
 
+        .timer-box {
+            background: white;
+            padding: 18px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .question-count {
+            color: #1e3a8a;
+            font-size: 18px;
+        }
+
+        .timer {
+            background: #1e3a8a;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 22px;
+            min-width: 110px;
+            text-align: center;
+        }
+
+        .total-time {
+            background: #16a34a;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
         .card {
             background: white;
             padding: 25px;
@@ -67,7 +101,7 @@
         }
 
         .question {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #1e3a8a;
             margin-bottom: 20px;
@@ -76,7 +110,7 @@
 
         .option {
             display: block;
-            padding: 12px;
+            padding: 14px;
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 6px;
@@ -93,8 +127,14 @@
             margin-right: 10px;
         }
 
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .next-btn,
         .submit-btn {
-            background: #16a34a;
             color: white;
             border: none;
             padding: 14px 25px;
@@ -105,8 +145,24 @@
             width: 100%;
         }
 
+        .next-btn {
+            background: #1e3a8a;
+        }
+
+        .next-btn:hover {
+            background: #172554;
+        }
+
+        .submit-btn {
+            background: #16a34a;
+        }
+
         .submit-btn:hover {
             background: #15803d;
+        }
+
+        .hidden {
+            display: none;
         }
 
         .no-question {
@@ -131,6 +187,11 @@
                 font-size: 16px;
             }
 
+            .timer-box {
+                flex-direction: column;
+                gap: 12px;
+            }
+
         }
 
     </style>
@@ -139,122 +200,124 @@
 
 <body>
 
-
     <div class="header">
 
         <h1>📝 {{ test.title }}</h1>
 
-        <p>
-            Subject: {{ test.subject }}
-        </p>
+        <p>Subject: {{ test.subject }}</p>
 
     </div>
 
 
     <div class="container">
 
-
         <a href="{{ url_for('user_panel') }}"
            class="back-btn">
-
             ← Back to User Panel
-
         </a>
 
 
         {% if questions %}
 
+        <div class="timer-box">
 
-        <form action="{{ url_for('submit_test', test_id=test.id) }}"
+            <div class="question-count">
+                Question:
+                <span id="currentQuestion">1</span>
+                / {{ questions|length }}
+            </div>
+
+            <div class="timer">
+                ⏱ <span id="questionTimer">01:00</span>
+            </div>
+
+            <div class="total-time">
+                Total Time:
+                <span id="totalTimer">00:00</span>
+            </div>
+
+        </div>
+
+
+        <form id="testForm"
+              action="{{ url_for('submit_test', test_id=test.id) }}"
               method="POST">
-
 
             {% for question in questions %}
 
-
-            <div class="card">
-
+            <div class="card question-card {% if loop.index != 1 %}hidden{% endif %}"
+                 data-question-id="{{ question.id }}">
 
                 <div class="question">
-
-                    Q{{ loop.index }}.
-                    {{ question.question }}
-
+                    Q{{ loop.index }}. {{ question.question }}
                 </div>
 
 
                 <label class="option">
-
-                    <input
-                        type="radio"
-                        name="answer_{{ question.id }}"
-                        value="A"
-                        required
-                    >
+                    <input type="radio"
+                           name="answer_{{ question.id }}"
+                           value="A">
 
                     A. {{ question.option_a }}
-
                 </label>
 
 
                 <label class="option">
-
-                    <input
-                        type="radio"
-                        name="answer_{{ question.id }}"
-                        value="B"
-                    >
+                    <input type="radio"
+                           name="answer_{{ question.id }}"
+                           value="B">
 
                     B. {{ question.option_b }}
-
                 </label>
 
 
                 <label class="option">
-
-                    <input
-                        type="radio"
-                        name="answer_{{ question.id }}"
-                        value="C"
-                    >
+                    <input type="radio"
+                           name="answer_{{ question.id }}"
+                           value="C">
 
                     C. {{ question.option_c }}
-
                 </label>
 
 
                 <label class="option">
-
-                    <input
-                        type="radio"
-                        name="answer_{{ question.id }}"
-                        value="D"
-                    >
+                    <input type="radio"
+                           name="answer_{{ question.id }}"
+                           value="D">
 
                     D. {{ question.option_d }}
-
                 </label>
 
-
             </div>
-
 
             {% endfor %}
 
 
-            <button type="submit"
-                    class="submit-btn">
+            <div class="navigation">
 
-                ✅ Submit Test
+                <button type="button"
+                        id="nextButton"
+                        class="next-btn">
 
-            </button>
+                    Next Question →
 
+                </button>
+
+
+                <button type="submit"
+                        id="submitButton"
+                        class="submit-btn hidden">
+
+                    ✅ Submit Test
+
+                </button>
+
+            </div>
 
         </form>
 
 
         {% else %}
-
 
         <div class="no-question">
 
@@ -266,12 +329,603 @@
 
         </div>
 
-
         {% endif %}
-
 
     </div>
 
+
+    {% if questions %}
+
+    <script>
+
+        const totalQuestions =
+            Number("{{ questions|length }}");
+
+        const testId =
+            Number("{{ test.id }}");
+
+        let currentQuestion = 0;
+
+        let questionTimeLeft = 60;
+
+        let totalTimeLeft =
+            totalQuestions * 60;
+
+        let questionTimer = null;
+
+        let totalTimer = null;
+
+
+        const testKey =
+            "jayStudyTest_" + testId;
+
+
+        const questionCards =
+            document.querySelectorAll(
+                ".question-card"
+            );
+
+
+        const questionTimerElement =
+            document.getElementById(
+                "questionTimer"
+            );
+
+
+        const totalTimerElement =
+            document.getElementById(
+                "totalTimer"
+            );
+
+
+        const currentQuestionElement =
+            document.getElementById(
+                "currentQuestion"
+            );
+
+
+        const nextButton =
+            document.getElementById(
+                "nextButton"
+            );
+
+
+        const submitButton =
+            document.getElementById(
+                "submitButton"
+            );
+
+
+        const testForm =
+            document.getElementById(
+                "testForm"
+            );
+
+
+        const timedOutQuestions = new Set();
+
+
+        function formatTime(seconds) {
+
+            if (seconds < 0) {
+                seconds = 0;
+            }
+
+            const minutes =
+                Math.floor(seconds / 60);
+
+            const remainingSeconds =
+                seconds % 60;
+
+            return String(minutes).padStart(2, "0")
+                + ":"
+                + String(remainingSeconds).padStart(2, "0");
+
+        }
+
+
+        function getCurrentQuestionId() {
+
+            return questionCards[
+                currentQuestion
+            ].dataset.questionId;
+
+        }
+
+
+        function markCurrentQuestionTimeout() {
+
+            const questionId =
+                getCurrentQuestionId();
+
+            timedOutQuestions.add(
+                String(questionId)
+            );
+
+        }
+
+
+        function addTimeoutInputs() {
+
+            document.querySelectorAll(
+                'input[name="timed_out_question"]'
+            ).forEach(function(input) {
+
+                input.remove();
+
+            });
+
+
+            timedOutQuestions.forEach(
+                function(questionId) {
+
+                    const input =
+                        document.createElement("input");
+
+                    input.type = "hidden";
+
+                    input.name =
+                        "timed_out_question";
+
+                    input.value =
+                        questionId;
+
+                    testForm.appendChild(input);
+
+                }
+            );
+
+        }
+
+
+        function saveTestState() {
+
+            const answers = {};
+
+            const checkedInputs =
+                document.querySelectorAll(
+                    'input[type="radio"]:checked'
+                );
+
+
+            checkedInputs.forEach(function(input) {
+
+                answers[input.name] =
+                    input.value;
+
+            });
+
+
+            localStorage.setItem(
+                testKey,
+                JSON.stringify({
+
+                    currentQuestion:
+                        currentQuestion,
+
+                    questionTimeLeft:
+                        questionTimeLeft,
+
+                    totalTimeLeft:
+                        totalTimeLeft,
+
+                    answers:
+                        answers,
+
+                    timedOutQuestions:
+                        Array.from(
+                            timedOutQuestions
+                        )
+
+                })
+            );
+
+        }
+
+
+        function loadTestState() {
+
+            const savedState =
+                localStorage.getItem(testKey);
+
+
+            if (!savedState) {
+                return;
+            }
+
+
+            try {
+
+                const state =
+                    JSON.parse(savedState);
+
+
+                if (
+                    typeof state.currentQuestion === "number" &&
+                    state.currentQuestion >= 0 &&
+                    state.currentQuestion < totalQuestions
+                ) {
+
+                    currentQuestion =
+                        state.currentQuestion;
+
+                }
+
+
+                if (
+                    typeof state.questionTimeLeft === "number"
+                ) {
+
+                    questionTimeLeft =
+                        state.questionTimeLeft;
+
+                }
+
+
+                if (
+                    typeof state.totalTimeLeft === "number"
+                ) {
+
+                    totalTimeLeft =
+                        state.totalTimeLeft;
+
+                }
+
+
+                if (
+                    Array.isArray(
+                        state.timedOutQuestions
+                    )
+                ) {
+
+                    state.timedOutQuestions
+                        .forEach(function(questionId) {
+
+                            timedOutQuestions.add(
+                                String(questionId)
+                            );
+
+                        });
+
+                }
+
+
+                if (state.answers) {
+
+                    Object.keys(state.answers)
+                        .forEach(function(name) {
+
+                            const inputs =
+                                document.querySelectorAll(
+                                    'input[name="' +
+                                    name +
+                                    '"]'
+                                );
+
+
+                            inputs.forEach(function(input) {
+
+                                if (
+                                    input.value ===
+                                    state.answers[name]
+                                ) {
+
+                                    input.checked = true;
+
+                                }
+
+                            });
+
+                        });
+
+                }
+
+            }
+
+            catch (error) {
+
+                localStorage.removeItem(
+                    testKey
+                );
+
+            }
+
+        }
+
+
+        function showQuestion(index) {
+
+            questionCards.forEach(
+                function(card, cardIndex) {
+
+                    if (cardIndex === index) {
+
+                        card.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+
+                    else {
+
+                        card.classList.add(
+                            "hidden"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            currentQuestionElement.textContent =
+                index + 1;
+
+
+            if (
+                index === totalQuestions - 1
+            ) {
+
+                nextButton.classList.add(
+                    "hidden"
+                );
+
+                submitButton.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+            else {
+
+                nextButton.classList.remove(
+                    "hidden"
+                );
+
+                submitButton.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        }
+
+
+        function updateTimers() {
+
+            questionTimerElement.textContent =
+                formatTime(questionTimeLeft);
+
+
+            totalTimerElement.textContent =
+                formatTime(totalTimeLeft);
+
+
+            if (questionTimeLeft <= 10) {
+
+                questionTimerElement
+                    .parentElement
+                    .style
+                    .background = "#dc2626";
+
+            }
+
+            else {
+
+                questionTimerElement
+                    .parentElement
+                    .style
+                    .background = "#1e3a8a";
+
+            }
+
+        }
+
+
+        function nextQuestion() {
+
+            if (
+                currentQuestion <
+                totalQuestions - 1
+            ) {
+
+                currentQuestion++;
+
+                questionTimeLeft = 60;
+
+                showQuestion(
+                    currentQuestion
+                );
+
+                updateTimers();
+
+                saveTestState();
+
+            }
+
+        }
+
+
+        function handleQuestionTimeout() {
+
+            markCurrentQuestionTimeout();
+
+            saveTestState();
+
+
+            if (
+                currentQuestion ===
+                totalQuestions - 1
+            ) {
+
+                submitTestAutomatically();
+
+            }
+
+            else {
+
+                nextQuestion();
+
+            }
+
+        }
+
+
+        function submitTestAutomatically() {
+
+            clearInterval(
+                questionTimer
+            );
+
+            clearInterval(
+                totalTimer
+            );
+
+            addTimeoutInputs();
+
+            localStorage.removeItem(
+                testKey
+            );
+
+            testForm.submit();
+
+        }
+
+
+        nextButton.addEventListener(
+            "click",
+            function() {
+
+                nextQuestion();
+
+            }
+        );
+
+
+        testForm.addEventListener(
+            "submit",
+            function() {
+
+                clearInterval(
+                    questionTimer
+                );
+
+                clearInterval(
+                    totalTimer
+                );
+
+                addTimeoutInputs();
+
+                localStorage.removeItem(
+                    testKey
+                );
+
+            }
+        );
+
+
+        loadTestState();
+
+        showQuestion(
+            currentQuestion
+        );
+
+        updateTimers();
+
+
+        questionTimer = setInterval(
+            function() {
+
+                questionTimeLeft--;
+
+
+                if (
+                    questionTimeLeft <= 0
+                ) {
+
+                    questionTimeLeft = 0;
+
+                    updateTimers();
+
+                    handleQuestionTimeout();
+
+                    return;
+
+                }
+
+
+                updateTimers();
+
+                saveTestState();
+
+            },
+            1000
+        );
+
+
+        totalTimer = setInterval(
+            function() {
+
+                totalTimeLeft--;
+
+
+                if (
+                    totalTimeLeft <= 0
+                ) {
+
+                    totalTimeLeft = 0;
+
+                    updateTimers();
+
+
+                    /*
+                    Mark all unanswered
+                    remaining questions as timeout
+                    */
+
+                    questionCards.forEach(
+                        function(card) {
+
+                            const questionId =
+                                card.dataset.questionId;
+
+                            const answer =
+                                document.querySelector(
+                                    'input[name="answer_' +
+                                    questionId +
+                                    '"]:checked'
+                                );
+
+                            if (!answer) {
+
+                                timedOutQuestions.add(
+                                    String(questionId)
+                                );
+
+                            }
+
+                        }
+                    );
+
+
+                    submitTestAutomatically();
+
+                    return;
+
+                }
+
+
+                updateTimers();
+
+                saveTestState();
+
+            },
+            1000
+        );
+
+    </script>
+
+    {% endif %}
 
 </body>
 
