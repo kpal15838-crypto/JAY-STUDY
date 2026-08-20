@@ -13,13 +13,15 @@ DATABASE = "jay_study.db"
 # ==========================================
 
 def get_db_connection():
+
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
+
     return conn
 
 
 # ==========================================
-# CREATE DATABASE TABLES
+# CREATE / UPDATE DATABASE TABLES
 # ==========================================
 
 def init_db():
@@ -65,14 +67,6 @@ def init_db():
         )
     """)
 
-    try:
-        conn.execute("""
-            ALTER TABLE question_papers
-            ADD COLUMN questions TEXT
-        """)
-    except sqlite3.OperationalError:
-        pass
-
     conn.execute("""
         CREATE TABLE IF NOT EXISTS signatures (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,10 +76,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
-    # ==========================================
-    # TEST SYSTEM TABLES
-    # ==========================================
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS tests (
@@ -122,14 +112,6 @@ def init_db():
         )
     """)
 
-    try:
-        conn.execute("""
-            ALTER TABLE test_results
-            ADD COLUMN timeout_answers INTEGER NOT NULL DEFAULT 0
-        """)
-    except sqlite3.OperationalError:
-        pass
-
     conn.execute("""
         CREATE TABLE IF NOT EXISTS test_answer_details (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -142,13 +124,60 @@ def init_db():
         )
     """)
 
-    try:
-        conn.execute("""
-            ALTER TABLE test_answer_details
-            ADD COLUMN is_timeout INTEGER NOT NULL DEFAULT 0
-        """)
-    except sqlite3.OperationalError:
-        pass
+
+    # ==========================================
+    # DATABASE MIGRATIONS
+    # Existing data will NOT be deleted
+    # ==========================================
+
+    migrations = [
+
+        """
+        ALTER TABLE question_papers
+        ADD COLUMN questions TEXT
+        """,
+
+        """
+        ALTER TABLE test_results
+        ADD COLUMN timeout_answers INTEGER NOT NULL DEFAULT 0
+        """,
+
+        """
+        ALTER TABLE test_answer_details
+        ADD COLUMN is_timeout INTEGER NOT NULL DEFAULT 0
+        """,
+
+        """
+        ALTER TABLE test_answer_details
+        ADD COLUMN option_a TEXT
+        """,
+
+        """
+        ALTER TABLE test_answer_details
+        ADD COLUMN option_b TEXT
+        """,
+
+        """
+        ALTER TABLE test_answer_details
+        ADD COLUMN option_c TEXT
+        """,
+
+        """
+        ALTER TABLE test_answer_details
+        ADD COLUMN option_d TEXT
+        """
+
+    ]
+
+    for migration in migrations:
+
+        try:
+
+            conn.execute(migration)
+
+        except sqlite3.OperationalError:
+
+            pass
 
     conn.commit()
     conn.close()
@@ -160,6 +189,7 @@ def init_db():
 
 @app.route("/")
 def home():
+
     return render_template("dashboard.html")
 
 
@@ -181,7 +211,12 @@ def students():
 
         conn.execute("""
             INSERT INTO students
-            (name, roll_number, course, mobile)
+            (
+                name,
+                roll_number,
+                course,
+                mobile
+            )
             VALUES (?, ?, ?, ?)
         """, (
             name,
@@ -194,6 +229,7 @@ def students():
         conn.close()
 
         if "admin" in session:
+
             return redirect(url_for("admin_panel"))
 
         return redirect(url_for("students"))
@@ -218,10 +254,14 @@ def students():
 # EDIT STUDENT
 # ==========================================
 
-@app.route("/edit-student/<int:id>", methods=["GET", "POST"])
+@app.route(
+    "/edit-student/<int:id>",
+    methods=["GET", "POST"]
+)
 def edit_student(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -232,28 +272,26 @@ def edit_student(id):
     ).fetchone()
 
     if student is None:
+
         conn.close()
+
         return "Student not found!"
 
     if request.method == "POST":
 
-        name = request.form["name"]
-        roll_number = request.form["roll_number"]
-        course = request.form["course"]
-        mobile = request.form["mobile"]
-
         conn.execute("""
             UPDATE students
-            SET name = ?,
+            SET
+                name = ?,
                 roll_number = ?,
                 course = ?,
                 mobile = ?
             WHERE id = ?
         """, (
-            name,
-            roll_number,
-            course,
-            mobile,
+            request.form["name"],
+            request.form["roll_number"],
+            request.form["course"],
+            request.form["mobile"],
             id
         ))
 
@@ -274,10 +312,14 @@ def edit_student(id):
 # DELETE STUDENT
 # ==========================================
 
-@app.route("/delete-student/<int:id>", methods=["POST"])
+@app.route(
+    "/delete-student/<int:id>",
+    methods=["POST"]
+)
 def delete_student(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -305,8 +347,13 @@ def fees():
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(request.form["total_fees"])
-        submitted_fees = float(request.form["submitted_fees"])
+        total_fees = float(
+            request.form["total_fees"]
+        )
+
+        submitted_fees = float(
+            request.form["submitted_fees"]
+        )
 
         remaining_fees = total_fees - submitted_fees
 
@@ -334,6 +381,7 @@ def fees():
         conn.close()
 
         if "admin" in session:
+
             return redirect(url_for("admin_panel"))
 
         return redirect(url_for("fees"))
@@ -358,10 +406,14 @@ def fees():
 # EDIT FEE
 # ==========================================
 
-@app.route("/edit-fee/<int:id>", methods=["GET", "POST"])
+@app.route(
+    "/edit-fee/<int:id>",
+    methods=["GET", "POST"]
+)
 def edit_fee(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -372,7 +424,9 @@ def edit_fee(id):
     ).fetchone()
 
     if fee is None:
+
         conn.close()
+
         return "Fee record not found!"
 
     if request.method == "POST":
@@ -380,14 +434,20 @@ def edit_fee(id):
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(request.form["total_fees"])
-        submitted_fees = float(request.form["submitted_fees"])
+        total_fees = float(
+            request.form["total_fees"]
+        )
+
+        submitted_fees = float(
+            request.form["submitted_fees"]
+        )
 
         remaining_fees = total_fees - submitted_fees
 
         conn.execute("""
             UPDATE fees
-            SET name = ?,
+            SET
+                name = ?,
                 roll_number = ?,
                 total_fees = ?,
                 submitted_fees = ?,
@@ -419,10 +479,14 @@ def edit_fee(id):
 # DELETE FEE
 # ==========================================
 
-@app.route("/delete-fee/<int:id>", methods=["POST"])
+@app.route(
+    "/delete-fee/<int:id>",
+    methods=["POST"]
+)
 def delete_fee(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -442,14 +506,25 @@ def delete_fee(id):
 # SIGNATURE
 # ==========================================
 
-@app.route("/signature", methods=["GET", "POST"])
+@app.route(
+    "/signature",
+    methods=["GET", "POST"]
+)
 def signature():
 
     if request.method == "POST":
 
-        student_name = request.form["student_name"]
-        roll_number = request.form["roll_number"]
-        signature_data = request.form["signature_data"]
+        student_name = request.form[
+            "student_name"
+        ]
+
+        roll_number = request.form[
+            "roll_number"
+        ]
+
+        signature_data = request.form[
+            "signature_data"
+        ]
 
         conn = get_db_connection()
 
@@ -479,10 +554,14 @@ def signature():
 # DELETE SIGNATURE
 # ==========================================
 
-@app.route("/delete-signature/<int:id>", methods=["POST"])
+@app.route(
+    "/delete-signature/<int:id>",
+    methods=["POST"]
+)
 def delete_signature(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -502,7 +581,10 @@ def delete_signature(id):
 # USER REGISTRATION
 # ==========================================
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route(
+    "/register",
+    methods=["GET", "POST"]
+)
 def register():
 
     if request.method == "POST":
@@ -510,7 +592,9 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        hashed_password = generate_password_hash(password)
+        hashed_password = generate_password_hash(
+            password
+        )
 
         conn = get_db_connection()
 
@@ -527,7 +611,10 @@ def register():
 
         conn.execute("""
             INSERT INTO users
-            (username, password)
+            (
+                username,
+                password
+            )
             VALUES (?, ?)
         """, (
             username,
@@ -546,7 +633,10 @@ def register():
 # USER LOGIN
 # ==========================================
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route(
+    "/login",
+    methods=["GET", "POST"]
+)
 def login():
 
     if request.method == "POST":
@@ -563,16 +653,17 @@ def login():
 
         conn.close()
 
-        if user and check_password_hash(
-            user["password"],
-            password
+        if (
+            user
+            and check_password_hash(
+                user["password"],
+                password
+            )
         ):
 
             session["user"] = user["username"]
 
-            return redirect(
-                url_for("user_panel")
-            )
+            return redirect(url_for("user_panel"))
 
         return "Invalid Username or Password!"
 
@@ -587,6 +678,7 @@ def login():
 def user_panel():
 
     if "user" not in session:
+
         return redirect(url_for("login"))
 
     conn = get_db_connection()
@@ -600,7 +692,8 @@ def user_panel():
     tests_data = conn.execute("""
         SELECT
             tests.*,
-            COUNT(test_questions.id) AS question_count
+            COUNT(test_questions.id)
+            AS question_count
         FROM tests
         LEFT JOIN test_questions
         ON tests.id = test_questions.test_id
@@ -622,10 +715,16 @@ def user_panel():
 # VIEW QUESTION PAPER
 # ==========================================
 
-@app.route("/question-paper/<int:id>")
+@app.route(
+    "/question-paper/<int:id>"
+)
 def view_question_paper(id):
 
-    if "user" not in session and "admin" not in session:
+    if (
+        "user" not in session
+        and "admin" not in session
+    ):
+
         return redirect(url_for("login"))
 
     conn = get_db_connection()
@@ -638,6 +737,7 @@ def view_question_paper(id):
     conn.close()
 
     if paper is None:
+
         return "Question Paper Not Found!"
 
     return render_template(
@@ -650,10 +750,14 @@ def view_question_paper(id):
 # DELETE USER
 # ==========================================
 
-@app.route("/delete-user/<int:id>", methods=["POST"])
+@app.route(
+    "/delete-user/<int:id>",
+    methods=["POST"]
+)
 def delete_user(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -673,7 +777,10 @@ def delete_user(id):
 # ADMIN LOGIN
 # ==========================================
 
-@app.route("/admin", methods=["GET", "POST"])
+@app.route(
+    "/admin",
+    methods=["GET", "POST"]
+)
 def admin_login():
 
     if request.method == "POST":
@@ -688,9 +795,7 @@ def admin_login():
 
             session["admin"] = True
 
-            return redirect(
-                url_for("admin_panel")
-            )
+            return redirect(url_for("admin_panel"))
 
         return "Invalid Admin Username or Password!"
 
@@ -705,6 +810,7 @@ def admin_login():
 def admin_panel():
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -742,7 +848,8 @@ def admin_panel():
     tests_data = conn.execute("""
         SELECT
             tests.*,
-            COUNT(test_questions.id) AS question_count
+            COUNT(test_questions.id)
+            AS question_count
         FROM tests
         LEFT JOIN test_questions
         ON tests.id = test_questions.test_id
@@ -779,18 +886,43 @@ def admin_panel():
 # ADD QUESTION PAPER
 # ==========================================
 
-@app.route("/add-question-paper", methods=["POST"])
+@app.route(
+    "/add-question-paper",
+    methods=["POST"]
+)
 def add_question_paper():
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
-    title = request.form.get("title", "").strip()
-    subject = request.form.get("subject", "").strip()
-    year = request.form.get("year", "").strip()
-    questions = request.form.get("questions", "").strip()
+    title = request.form.get(
+        "title",
+        ""
+    ).strip()
 
-    if not title or not subject or not year or not questions:
+    subject = request.form.get(
+        "subject",
+        ""
+    ).strip()
+
+    year = request.form.get(
+        "year",
+        ""
+    ).strip()
+
+    questions = request.form.get(
+        "questions",
+        ""
+    ).strip()
+
+    if (
+        not title
+        or not subject
+        or not year
+        or not questions
+    ):
+
         return "Please fill all Question Paper fields!"
 
     conn = get_db_connection()
@@ -828,6 +960,7 @@ def add_question_paper():
 def edit_question_paper(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -838,18 +971,42 @@ def edit_question_paper(id):
     ).fetchone()
 
     if paper is None:
+
         conn.close()
+
         return "Question Paper Not Found!"
 
     if request.method == "POST":
 
-        title = request.form.get("title", "").strip()
-        subject = request.form.get("subject", "").strip()
-        year = request.form.get("year", "").strip()
-        questions = request.form.get("questions", "").strip()
+        title = request.form.get(
+            "title",
+            ""
+        ).strip()
 
-        if not title or not subject or not year or not questions:
+        subject = request.form.get(
+            "subject",
+            ""
+        ).strip()
+
+        year = request.form.get(
+            "year",
+            ""
+        ).strip()
+
+        questions = request.form.get(
+            "questions",
+            ""
+        ).strip()
+
+        if (
+            not title
+            or not subject
+            or not year
+            or not questions
+        ):
+
             conn.close()
+
             return "Please fill all fields!"
 
         conn.execute("""
@@ -892,6 +1049,7 @@ def edit_question_paper(id):
 def delete_question_paper(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
@@ -911,33 +1069,66 @@ def delete_question_paper(id):
 # ADD TEST
 # ==========================================
 
-@app.route("/add-test", methods=["POST"])
+@app.route(
+    "/add-test",
+    methods=["POST"]
+)
 def add_test():
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
-    title = request.form.get("title", "").strip()
-    subject = request.form.get("subject", "").strip()
+    title = request.form.get(
+        "title",
+        ""
+    ).strip()
 
-    questions = request.form.getlist("question[]")
-    option_a = request.form.getlist("option_a[]")
-    option_b = request.form.getlist("option_b[]")
-    option_c = request.form.getlist("option_c[]")
-    option_d = request.form.getlist("option_d[]")
-    correct_answers = request.form.getlist("correct_answer[]")
+    subject = request.form.get(
+        "subject",
+        ""
+    ).strip()
+
+    questions = request.form.getlist(
+        "question[]"
+    )
+
+    option_a = request.form.getlist(
+        "option_a[]"
+    )
+
+    option_b = request.form.getlist(
+        "option_b[]"
+    )
+
+    option_c = request.form.getlist(
+        "option_c[]"
+    )
+
+    option_d = request.form.getlist(
+        "option_d[]"
+    )
+
+    correct_answers = request.form.getlist(
+        "correct_answer[]"
+    )
 
     if not title or not subject:
+
         return "Please enter Test Title and Subject!"
 
     if not questions:
+
         return "Please add at least one question!"
 
     conn = get_db_connection()
 
     cursor = conn.execute("""
         INSERT INTO tests
-        (title, subject)
+        (
+            title,
+            subject
+        )
         VALUES (?, ?)
     """, (
         title,
@@ -945,6 +1136,7 @@ def add_test():
     ))
 
     test_id = cursor.lastrowid
+
     valid_question_count = 0
 
     for i in range(len(questions)):
@@ -952,6 +1144,7 @@ def add_test():
         question = questions[i].strip()
 
         if not question:
+
             continue
 
         if (
@@ -961,16 +1154,23 @@ def add_test():
             or i >= len(option_d)
             or i >= len(correct_answers)
         ):
+
             continue
+
+        correct_answer = (
+            correct_answers[i]
+            .strip()
+            .upper()
+        )
 
         if (
             not option_a[i].strip()
             or not option_b[i].strip()
             or not option_c[i].strip()
             or not option_d[i].strip()
-            or correct_answers[i].strip().upper()
-            not in ["A", "B", "C", "D"]
+            or correct_answer not in ["A", "B", "C", "D"]
         ):
+
             continue
 
         conn.execute("""
@@ -992,7 +1192,7 @@ def add_test():
             option_b[i].strip(),
             option_c[i].strip(),
             option_d[i].strip(),
-            correct_answers[i].strip().upper()
+            correct_answer
         ))
 
         valid_question_count += 1
@@ -1007,7 +1207,7 @@ def add_test():
         conn.commit()
         conn.close()
 
-        return "Please add at least one complete question with options!"
+        return "Please add at least one complete question!"
 
     conn.commit()
     conn.close()
@@ -1016,13 +1216,182 @@ def add_test():
 
 
 # ==========================================
+# EDIT TEST
+# ==========================================
+
+@app.route(
+    "/edit-test/<int:id>",
+    methods=["GET", "POST"]
+)
+def edit_test(id):
+
+    if "admin" not in session:
+
+        return redirect(url_for("admin_login"))
+
+    conn = get_db_connection()
+
+    test = conn.execute(
+        "SELECT * FROM tests WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    if test is None:
+
+        conn.close()
+
+        return "Test Not Found!"
+
+    questions = conn.execute("""
+        SELECT *
+        FROM test_questions
+        WHERE test_id = ?
+        ORDER BY id ASC
+    """, (
+        id,
+    )).fetchall()
+
+    if request.method == "POST":
+
+        title = request.form.get(
+            "title",
+            ""
+        ).strip()
+
+        subject = request.form.get(
+            "subject",
+            ""
+        ).strip()
+
+        question_ids = request.form.getlist(
+            "question_id[]"
+        )
+
+        questions_list = request.form.getlist(
+            "question[]"
+        )
+
+        option_a_list = request.form.getlist(
+            "option_a[]"
+        )
+
+        option_b_list = request.form.getlist(
+            "option_b[]"
+        )
+
+        option_c_list = request.form.getlist(
+            "option_c[]"
+        )
+
+        option_d_list = request.form.getlist(
+            "option_d[]"
+        )
+
+        correct_answers = request.form.getlist(
+            "correct_answer[]"
+        )
+
+        if not title or not subject:
+
+            conn.close()
+
+            return "Please enter Test Title and Subject!"
+
+        conn.execute("""
+            UPDATE tests
+            SET
+                title = ?,
+                subject = ?
+            WHERE id = ?
+        """, (
+            title,
+            subject,
+            id
+        ))
+
+        for i in range(len(question_ids)):
+
+            if (
+                i >= len(questions_list)
+                or i >= len(option_a_list)
+                or i >= len(option_b_list)
+                or i >= len(option_c_list)
+                or i >= len(option_d_list)
+                or i >= len(correct_answers)
+            ):
+
+                continue
+
+            question = questions_list[i].strip()
+            option_a = option_a_list[i].strip()
+            option_b = option_b_list[i].strip()
+            option_c = option_c_list[i].strip()
+            option_d = option_d_list[i].strip()
+
+            correct_answer = (
+                correct_answers[i]
+                .strip()
+                .upper()
+            )
+
+            if (
+                not question
+                or not option_a
+                or not option_b
+                or not option_c
+                or not option_d
+                or correct_answer not in ["A", "B", "C", "D"]
+            ):
+
+                continue
+
+            conn.execute("""
+                UPDATE test_questions
+                SET
+                    question = ?,
+                    option_a = ?,
+                    option_b = ?,
+                    option_c = ?,
+                    option_d = ?,
+                    correct_answer = ?
+                WHERE id = ?
+                AND test_id = ?
+            """, (
+                question,
+                option_a,
+                option_b,
+                option_c,
+                option_d,
+                correct_answer,
+                question_ids[i],
+                id
+            ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("admin_panel"))
+
+    conn.close()
+
+    return render_template(
+        "edit_test.html",
+        test=test,
+        questions=questions
+    )
+
+
+# ==========================================
 # START TEST
 # ==========================================
 
-@app.route("/start-test/<int:id>")
+@app.route(
+    "/start-test/<int:id>"
+)
 def start_test(id):
 
     if "user" not in session:
+
         return redirect(url_for("login"))
 
     conn = get_db_connection()
@@ -1037,14 +1406,18 @@ def start_test(id):
         FROM test_questions
         WHERE test_id = ?
         ORDER BY id ASC
-    """, (id,)).fetchall()
+    """, (
+        id,
+    )).fetchall()
 
     conn.close()
 
     if test is None:
+
         return "Test Not Found!"
 
     if not questions:
+
         return "No questions available for this test!"
 
     return render_template(
@@ -1058,10 +1431,14 @@ def start_test(id):
 # SUBMIT TEST
 # ==========================================
 
-@app.route("/submit-test/<int:test_id>", methods=["POST"])
+@app.route(
+    "/submit-test/<int:test_id>",
+    methods=["POST"]
+)
 def submit_test(test_id):
 
     if "user" not in session:
+
         return redirect(url_for("login"))
 
     conn = get_db_connection()
@@ -1072,7 +1449,9 @@ def submit_test(test_id):
     ).fetchone()
 
     if test is None:
+
         conn.close()
+
         return "Test Not Found!"
 
     questions = conn.execute("""
@@ -1080,7 +1459,9 @@ def submit_test(test_id):
         FROM test_questions
         WHERE test_id = ?
         ORDER BY id ASC
-    """, (test_id,)).fetchall()
+    """, (
+        test_id,
+    )).fetchall()
 
     total_questions = len(questions)
 
@@ -1088,24 +1469,15 @@ def submit_test(test_id):
     wrong_answers = 0
     timeout_answers = 0
 
-
-    # ==========================================
-    # GET TIMEOUT QUESTION IDs
-    # ==========================================
-
     timed_out_question_ids = request.form.getlist(
         "timed_out_question"
     )
 
     timed_out_question_ids = {
         str(question_id)
-        for question_id in timed_out_question_ids
+        for question_id
+        in timed_out_question_ids
     }
-
-
-    # ==========================================
-    # COUNT RESULTS
-    # ==========================================
 
     for question in questions:
 
@@ -1116,50 +1488,35 @@ def submit_test(test_id):
             ""
         ).strip().upper()
 
-
-        # TIME OUT
         if question_id in timed_out_question_ids:
 
             timeout_answers += 1
+
             continue
 
-
-        # CORRECT
         if (
             selected_answer
-            and selected_answer ==
-            question["correct_answer"].upper()
+            and selected_answer
+            == question["correct_answer"].upper()
         ):
 
             correct_answers += 1
 
-
-        # WRONG
         elif selected_answer:
 
             wrong_answers += 1
-
-
-        # UNATTEMPTED
-        # Isko wrong_answers mein count nahi kiya jayega.
-        else:
-
-            pass
-
 
     percentage = 0
 
     if total_questions > 0:
 
         percentage = round(
-            (correct_answers / total_questions) * 100,
+            (
+                correct_answers
+                / total_questions
+            ) * 100,
             2
         )
-
-
-    # ==========================================
-    # SAVE MAIN RESULT
-    # ==========================================
 
     cursor = conn.execute("""
         INSERT INTO test_results
@@ -1185,11 +1542,6 @@ def submit_test(test_id):
 
     result_id = cursor.lastrowid
 
-
-    # ==========================================
-    # SAVE EVERY QUESTION DETAIL
-    # ==========================================
-
     for question in questions:
 
         question_id = str(question["id"])
@@ -1203,18 +1555,15 @@ def submit_test(test_id):
             "correct_answer"
         ].upper()
 
-
         is_timeout = (
             1
             if question_id in timed_out_question_ids
             else 0
         )
 
-
         if is_timeout:
 
             selected_answer = ""
-
 
         is_correct = (
             1
@@ -1226,33 +1575,38 @@ def submit_test(test_id):
             else 0
         )
 
-
         conn.execute("""
             INSERT INTO test_answer_details
             (
                 result_id,
                 question_id,
                 question,
+                option_a,
+                option_b,
+                option_c,
+                option_d,
                 selected_answer,
                 correct_answer,
                 is_correct,
                 is_timeout
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             result_id,
             question["id"],
             question["question"],
+            question["option_a"],
+            question["option_b"],
+            question["option_c"],
+            question["option_d"],
             selected_answer,
             correct_answer,
             is_correct,
             is_timeout
         ))
 
-
     conn.commit()
     conn.close()
-
 
     return redirect(
         url_for(
@@ -1266,10 +1620,16 @@ def submit_test(test_id):
 # TEST RESULT
 # ==========================================
 
-@app.route("/test-result/<int:id>")
+@app.route(
+    "/test-result/<int:id>"
+)
 def test_result(id):
 
-    if "user" not in session and "admin" not in session:
+    if (
+        "user" not in session
+        and "admin" not in session
+    ):
+
         return redirect(url_for("login"))
 
     conn = get_db_connection()
@@ -1283,14 +1643,15 @@ def test_result(id):
         JOIN tests
         ON test_results.test_id = tests.id
         WHERE test_results.id = ?
-    """, (id,)).fetchone()
+    """, (
+        id,
+    )).fetchone()
 
     if result is None:
 
         conn.close()
 
         return "Result Not Found!"
-
 
     if (
         "user" in session
@@ -1301,11 +1662,6 @@ def test_result(id):
 
         return "You are not allowed to view this result!"
 
-
-    # ==========================================
-    # CORRECT QUESTIONS
-    # ==========================================
-
     correct_questions = conn.execute("""
         SELECT *
         FROM test_answer_details
@@ -1313,12 +1669,9 @@ def test_result(id):
         AND is_correct = 1
         AND is_timeout = 0
         ORDER BY id ASC
-    """, (id,)).fetchall()
-
-
-    # ==========================================
-    # INCORRECT QUESTIONS
-    # ==========================================
+    """, (
+        id,
+    )).fetchall()
 
     wrong_questions = conn.execute("""
         SELECT *
@@ -1329,12 +1682,9 @@ def test_result(id):
         AND selected_answer IS NOT NULL
         AND selected_answer != ''
         ORDER BY id ASC
-    """, (id,)).fetchall()
-
-
-    # ==========================================
-    # UNATTEMPTED QUESTIONS
-    # ==========================================
+    """, (
+        id,
+    )).fetchall()
 
     unattempted_questions = conn.execute("""
         SELECT *
@@ -1347,12 +1697,9 @@ def test_result(id):
             OR selected_answer = ''
         )
         ORDER BY id ASC
-    """, (id,)).fetchall()
-
-
-    # ==========================================
-    # TIME OUT QUESTIONS
-    # ==========================================
+    """, (
+        id,
+    )).fetchall()
 
     timeout_questions = conn.execute("""
         SELECT *
@@ -1360,11 +1707,11 @@ def test_result(id):
         WHERE result_id = ?
         AND is_timeout = 1
         ORDER BY id ASC
-    """, (id,)).fetchall()
-
+    """, (
+        id,
+    )).fetchall()
 
     conn.close()
-
 
     return render_template(
         "test_result.html",
@@ -1377,21 +1724,154 @@ def test_result(id):
 
 
 # ==========================================
-# DELETE TEST
+# EDIT TEST RESULT
 # ==========================================
 
-@app.route("/delete-test/<int:id>", methods=["POST"])
-def delete_test(id):
+@app.route(
+    "/edit-test-result/<int:id>",
+    methods=["GET", "POST"]
+)
+def edit_test_result(id):
 
     if "admin" not in session:
+
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
-    conn.execute(
-        "DELETE FROM test_questions WHERE test_id = ?",
-        (id,)
+    result = conn.execute("""
+        SELECT
+            test_results.*,
+            tests.title,
+            tests.subject
+        FROM test_results
+        JOIN tests
+        ON test_results.test_id = tests.id
+        WHERE test_results.id = ?
+    """, (
+        id,
+    )).fetchone()
+
+    if result is None:
+
+        conn.close()
+
+        return "Result Not Found!"
+
+    if request.method == "POST":
+
+        correct_answers = int(
+            request.form["correct_answers"]
+        )
+
+        wrong_answers = int(
+            request.form["wrong_answers"]
+        )
+
+        timeout_answers = int(
+            request.form["timeout_answers"]
+        )
+
+        total_questions = result[
+            "total_questions"
+        ]
+
+        correct_answers = max(0, correct_answers)
+        wrong_answers = max(0, wrong_answers)
+        timeout_answers = max(0, timeout_answers)
+
+        percentage = 0
+
+        if total_questions > 0:
+
+            percentage = round(
+                (
+                    correct_answers
+                    / total_questions
+                ) * 100,
+                2
+            )
+
+        conn.execute("""
+            UPDATE test_results
+            SET
+                correct_answers = ?,
+                wrong_answers = ?,
+                timeout_answers = ?,
+                percentage = ?
+            WHERE id = ?
+        """, (
+            correct_answers,
+            wrong_answers,
+            timeout_answers,
+            percentage,
+            id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("admin_panel"))
+
+    conn.close()
+
+    return render_template(
+        "edit_test_result.html",
+        result=result
     )
+
+
+# ==========================================
+# DELETE TEST RESULT
+# ==========================================
+
+@app.route(
+    "/delete-test-result/<int:id>",
+    methods=["POST"]
+)
+def delete_test_result(id):
+
+    if "admin" not in session:
+
+        return redirect(url_for("admin_login"))
+
+    conn = get_db_connection()
+
+    conn.execute("""
+        DELETE FROM test_answer_details
+        WHERE result_id = ?
+    """, (
+        id,
+    ))
+
+    conn.execute("""
+        DELETE FROM test_results
+        WHERE id = ?
+    """, (
+        id,
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_panel"))
+
+
+# ==========================================
+# DELETE TEST
+# ==========================================
+
+@app.route(
+    "/delete-test/<int:id>",
+    methods=["POST"]
+)
+def delete_test(id):
+
+    if "admin" not in session:
+
+        return redirect(url_for("admin_login"))
+
+    conn = get_db_connection()
 
     conn.execute("""
         DELETE FROM test_answer_details
@@ -1400,10 +1880,17 @@ def delete_test(id):
             FROM test_results
             WHERE test_id = ?
         )
-    """, (id,))
+    """, (
+        id,
+    ))
 
     conn.execute(
         "DELETE FROM test_results WHERE test_id = ?",
+        (id,)
+    )
+
+    conn.execute(
+        "DELETE FROM test_questions WHERE test_id = ?",
         (id,)
     )
 
@@ -1431,11 +1918,16 @@ def logout():
 
 
 # ==========================================
+# INITIALIZE DATABASE
+# ==========================================
+
+init_db()
+
+
+# ==========================================
 # START APPLICATION
 # ==========================================
 
 if __name__ == "__main__":
-
-    init_db()
 
     app.run(debug=True)

@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -18,117 +17,154 @@
 
         body {
             margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
             background: #f4f6f9;
+            color: #222;
         }
 
         .header {
-            background: #1e3a8a;
+            background: #1e3a5f;
             color: white;
             padding: 20px;
             text-align: center;
         }
 
         .header h1 {
-            margin: 0 0 15px;
+            margin: 0;
         }
 
-        .logout {
+        .header p {
+            margin: 8px 0 0;
+        }
+
+        .logout-btn {
             display: inline-block;
-            background: #dc2626;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background: #dc3545;
             color: white;
-            padding: 10px 20px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
         }
 
         .container {
-            width: 90%;
-            max-width: 1250px;
-            margin: auto;
-            padding: 25px 0;
+            width: 95%;
+            max-width: 1300px;
+            margin: 25px auto;
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-card h3 {
-            margin: 0;
-            color: #555;
-        }
-
-        .stat-card h1 {
-            margin: 12px 0 0;
-            color: #1e3a8a;
-            font-size: 30px;
-        }
-
-        .card {
+        .section {
             background: white;
             padding: 25px;
             margin-bottom: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
-
-        h2,
-        h3 {
-            color: #1e3a8a;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
         }
 
         h2 {
+            color: #1e3a5f;
             margin-top: 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
         }
 
-        input {
-            padding: 12px;
-            margin: 5px;
-            width: 220px;
+        h3 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 11px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 15px;
         }
 
         textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            font-family: Arial, sans-serif;
+            min-height: 100px;
             resize: vertical;
         }
 
-        .search-box {
-            width: 100%;
-            max-width: 400px;
-            margin: 10px 0;
-        }
-
         button {
-            padding: 10px 16px;
-            background: #1e3a8a;
-            color: white;
             border: none;
-            border-radius: 5px;
+            padding: 10px 16px;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 14px;
         }
 
-        button:hover {
-            background: #172554;
+        .primary-btn {
+            background: #1e3a5f;
+            color: white;
+            margin-top: 18px;
+        }
+
+        .add-question-btn {
+            background: #198754;
+            color: white;
+            margin-top: 15px;
+        }
+
+        .edit-btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .view-btn {
+            display: inline-block;
+            background: #198754;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .question-box {
+            margin-top: 20px;
+            padding: 18px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e3a5f;
+            margin-bottom: 10px;
+        }
+
+        .remove-question-btn {
+            background: #dc3545;
+            color: white;
+            margin-top: 15px;
+        }
+
+        .table-box {
+            overflow-x: auto;
         }
 
         table {
@@ -142,163 +178,34 @@
             padding: 12px;
             border: 1px solid #ddd;
             text-align: left;
-            vertical-align: middle;
         }
 
         th {
-            background: #1e3a8a;
+            background: #1e3a5f;
             color: white;
+        }
+
+        .inline-form {
+            display: inline;
         }
 
         .empty-message {
-            color: #777;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            color: #666;
         }
 
-        .paid {
-            color: green;
-            font-weight: bold;
-        }
+        @media (max-width: 700px) {
 
-        .pending {
-            color: red;
-            font-weight: bold;
-        }
-
-        .whatsapp-btn {
-            display: inline-block;
-            background: #25D366;
-            color: white;
-            padding: 9px 14px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .edit-btn {
-            display: inline-block;
-            background: #16a34a;
-            color: white;
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .edit-btn:hover {
-            background: #15803d;
-        }
-
-        .delete-btn {
-            background: #dc2626;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .delete-btn:hover {
-            background: #991b1b;
-        }
-
-        .view-btn {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .view-btn:hover {
-            background: #1d4ed8;
-        }
-
-        .signature-image {
-            width: 220px;
-            max-width: 100%;
-            min-height: 80px;
-            height: auto;
-            display: block;
-            background: white;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            padding: 5px;
-        }
-
-        .no-signature {
-            color: #dc2626;
-            font-weight: bold;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .action-buttons form {
-            margin: 0;
-        }
-
-        /* TEST SECTION */
-
-        .question-box {
-            border: 1px solid #d1d5db;
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .question-box h3 {
-            margin-top: 0;
-        }
-
-        .question-box input {
-            width: calc(50% - 14px);
-        }
-
-        .correct-answer {
-            width: 220px;
-        }
-
-        .remove-question-btn {
-            background: #dc2626;
-            margin-top: 10px;
-        }
-
-        .add-question-btn {
-            background: #16a34a;
-            margin-top: 15px;
-        }
-
-        .result-good {
-            color: green;
-            font-weight: bold;
-        }
-
-        .result-bad {
-            color: red;
-            font-weight: bold;
-        }
-
-        @media (max-width: 600px) {
-
-            .container {
-                width: 95%;
+            .section {
+                padding: 18px;
             }
 
-            input,
-            .question-box input {
-                width: 100%;
-                margin: 5px 0;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                align-items: stretch;
+            th,
+            td {
+                font-size: 13px;
+                padding: 8px;
             }
 
         }
@@ -311,9 +218,14 @@
 
     <div class="header">
 
-        <h1>🔐 JAY-STUDY Admin Panel</h1>
+        <h1>JAY-STUDY ADMIN PANEL</h1>
 
-        <a href="/logout" class="logout">
+        <p>Manage Students, Fees, Question Papers, Tests and Results</p>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout-btn"
+        >
             Logout
         </a>
 
@@ -323,92 +235,56 @@
     <div class="container">
 
 
-        <!-- OVERVIEW CARDS -->
+        <!-- =========================
+             ADD STUDENT
+        ========================== -->
 
-        <div class="stats">
+        <div class="section">
 
-            <div class="stat-card">
-                <h3>👥 Total Users</h3>
-                <h1>{{ users|length }}</h1>
-            </div>
+            <h2>Add Student</h2>
 
-            <div class="stat-card">
-                <h3>🎓 Total Students</h3>
-                <h1>{{ students|length }}</h1>
-            </div>
+            <form
+                method="POST"
+                action="{{ url_for('students') }}"
+            >
 
-            <div class="stat-card">
-                <h3>💳 Fees Records</h3>
-                <h1>{{ fees|length }}</h1>
-            </div>
+                <label>Student Name</label>
 
-            <div class="stat-card">
-                <h3>📄 Question Papers</h3>
-                <h1>{{ question_papers|length }}</h1>
-            </div>
+                <input
+                    type="text"
+                    name="name"
+                    required
+                >
 
-            <div class="stat-card">
-                <h3>📝 Total Tests</h3>
-                <h1>{{ tests|length }}</h1>
-            </div>
+                <label>Roll Number</label>
 
-            <div class="stat-card">
-                <h3>📊 Test Results</h3>
-                <h1>{{ test_results|length }}</h1>
-            </div>
+                <input
+                    type="text"
+                    name="roll_number"
+                    required
+                >
 
-            <div class="stat-card">
-                <h3>✍️ Signatures</h3>
-                <h1>{{ signatures|length }}</h1>
-            </div>
+                <label>Course / Class</label>
 
-            <div class="stat-card">
+                <input
+                    type="text"
+                    name="course"
+                    required
+                >
 
-                <h3>💰 Pending Fees</h3>
+                <label>Mobile Number</label>
 
-                {% set ns = namespace(total=0) %}
+                <input
+                    type="text"
+                    name="mobile"
+                    required
+                >
 
-                {% for fee in fees %}
-                    {% set ns.total = ns.total + fee.remaining_fees %}
-                {% endfor %}
-
-                <h1>₹ {{ ns.total }}</h1>
-
-            </div>
-
-        </div>
-
-
-        <!-- STUDENT REGISTRATION -->
-
-        <div class="card">
-
-            <h2>🎓 Student Registration</h2>
-
-            <form action="/students" method="POST">
-
-                <input type="text"
-                       name="name"
-                       placeholder="Student Name"
-                       required>
-
-                <input type="text"
-                       name="roll_number"
-                       placeholder="Roll Number"
-                       required>
-
-                <input type="text"
-                       name="course"
-                       placeholder="Course"
-                       required>
-
-                <input type="text"
-                       name="mobile"
-                       placeholder="Mobile Number"
-                       required>
-
-                <button type="submit">
-                    Register Student
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Add Student
                 </button>
 
             </form>
@@ -416,395 +292,363 @@
         </div>
 
 
-        <!-- ADD FEES -->
+        <!-- =========================
+             STUDENTS LIST
+        ========================== -->
 
-        <div class="card">
+        <div class="section">
 
-            <h2>💰 Add Student Fees</h2>
+            <h2>Registered Students</h2>
 
-            <form action="/fees" method="POST">
+            {% if students %}
 
-                <input type="text"
-                       name="name"
-                       placeholder="Student Name"
-                       required>
+            <div class="table-box">
 
-                <input type="text"
-                       name="roll_number"
-                       placeholder="Roll Number"
-                       required>
+                <table>
 
-                <input type="number"
-                       name="total_fees"
-                       placeholder="Total Fees"
-                       required>
+                    <tr>
 
-                <input type="number"
-                       name="submitted_fees"
-                       placeholder="Submitted Fees"
-                       required>
+                        <th>Name</th>
+                        <th>Roll Number</th>
+                        <th>Course</th>
+                        <th>Mobile</th>
+                        <th>Action</th>
 
-                <button type="submit">
-                    Add Fees
-                </button>
+                    </tr>
 
-            </form>
+                    {% for student in students %}
 
-        </div>
+                    <tr>
 
+                        <td>{{ student.name }}</td>
 
-        <!-- ADD QUESTION PAPER -->
+                        <td>{{ student.roll_number }}</td>
 
-        <div class="card">
+                        <td>{{ student.course }}</td>
 
-            <h2>📄 Add Question Paper</h2>
+                        <td>{{ student.mobile }}</td>
 
-            <form action="{{ url_for('add_question_paper') }}"
-                  method="POST">
+                        <td>
 
-                <input type="text"
-                       name="title"
-                       placeholder="Question Paper Title"
-                       required>
-
-                <input type="text"
-                       name="subject"
-                       placeholder="Subject"
-                       required>
-
-                <input type="text"
-                       name="year"
-                       placeholder="Year"
-                       required>
-
-                <br><br>
-
-                <textarea
-                    name="questions"
-                    placeholder="Enter questions here..."
-                    required></textarea>
-
-                <br><br>
-
-                <button type="submit">
-                    ➕ Add Question Paper
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <!-- CREATE TEST -->
-
-        <div class="card">
-
-            <h2>📝 Create Student Test</h2>
-
-            <form action="/add-test"
-                  method="POST"
-                  id="testForm">
-
-                <input type="text"
-                       name="title"
-                       placeholder="Test Title"
-                       required>
-
-                <input type="text"
-                       name="subject"
-                       placeholder="Subject"
-                       required>
-
-
-                <div id="questionsContainer">
-
-                    <div class="question-box">
-
-                        <h3 class="question-number">
-                            Question 1
-                        </h3>
-
-                        <textarea
-                            name="question[]"
-                            placeholder="Enter Question"
-                            required></textarea>
-
-                        <br><br>
-
-                        <input type="text"
-                               name="option_a[]"
-                               placeholder="Option A"
-                               required>
-
-                        <input type="text"
-                               name="option_b[]"
-                               placeholder="Option B"
-                               required>
-
-                        <br>
-
-                        <input type="text"
-                               name="option_c[]"
-                               placeholder="Option C"
-                               required>
-
-                        <input type="text"
-                               name="option_d[]"
-                               placeholder="Option D"
-                               required>
-
-                        <br><br>
-
-                        <input type="text"
-                               name="correct_answer[]"
-                               class="correct-answer"
-                               placeholder="Correct Answer: A / B / C / D"
-                               maxlength="1"
-                               required>
-
-                    </div>
-
-                </div>
-
-
-                <button type="button"
-                        class="add-question-btn"
-                        onclick="addQuestion()">
-
-                    ➕ Add Another Question
-
-                </button>
-
-                <br><br>
-
-                <button type="submit">
-
-                    💾 Create Test
-
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <!-- CREATED TESTS -->
-
-        <div class="card">
-
-            <h2>📋 Created Tests</h2>
-
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search Test..."
-                   onkeyup="searchTable('testSearch', 'testTable')"
-                   id="testSearch">
-
-            {% if tests %}
-
-            <table id="testTable">
-
-                <tr>
-                    <th>ID</th>
-                    <th>Test Title</th>
-                    <th>Subject</th>
-                    <th>Questions</th>
-                    <th>Created At</th>
-                    <th>Action</th>
-                </tr>
-
-                {% for test in tests %}
-
-                <tr>
-
-                    <td>{{ test.id }}</td>
-
-                    <td>{{ test.title }}</td>
-
-                    <td>{{ test.subject }}</td>
-
-                    <td>{{ test.question_count }}</td>
-
-                    <td>{{ test.created_at }}</td>
-
-                    <td>
-
-                        <form action="/delete-test/{{ test.id }}"
-                              method="POST"
-                              onsubmit="return confirm('Delete this test? All related questions and results will also be deleted.')">
-
-                            <button type="submit"
-                                    class="delete-btn">
-
-                                🗑️ Delete
-
-                            </button>
-
-                        </form>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
-            {% else %}
-
-            <p class="empty-message">
-                No tests created yet.
-            </p>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- TEST RESULTS -->
-
-        <div class="card">
-
-            <h2>📊 Student Test Results</h2>
-
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search Result..."
-                   onkeyup="searchTable('resultSearch', 'resultTable')"
-                   id="resultSearch">
-
-            {% if test_results %}
-
-            <table id="resultTable">
-
-                <tr>
-                    <th>Result ID</th>
-                    <th>Student</th>
-                    <th>Test</th>
-                    <th>Subject</th>
-                    <th>Correct</th>
-                    <th>Wrong</th>
-                    <th>Score</th>
-                    <th>Percentage</th>
-                    <th>Submitted At</th>
-                </tr>
-
-                {% for result in test_results %}
-
-                <tr>
-
-                    <td>{{ result.id }}</td>
-
-                    <td>{{ result.username }}</td>
-
-                    <td>{{ result.title }}</td>
-
-                    <td>{{ result.subject }}</td>
-
-                    <td class="result-good">
-                        {{ result.correct_answers }}
-                    </td>
-
-                    <td class="result-bad">
-                        {{ result.wrong_answers }}
-                    </td>
-
-                    <td>
-                        {{ result.correct_answers }}/{{ result.total_questions }}
-                    </td>
-
-                    <td>
-                        {{ result.percentage }}%
-                    </td>
-
-                    <td>
-                        {{ result.submitted_at }}
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
-            {% else %}
-
-            <p class="empty-message">
-                No student has submitted a test yet.
-            </p>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- QUESTION PAPERS -->
-
-        <div class="card">
-
-            <h2>📋 Question Papers</h2>
-
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search Question Paper..."
-                   onkeyup="searchTable('questionSearch', 'questionTable')"
-                   id="questionSearch">
-
-            {% if question_papers %}
-
-            <table id="questionTable">
-
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Subject</th>
-                    <th>Year</th>
-                    <th>Action</th>
-                </tr>
-
-                {% for paper in question_papers %}
-
-                <tr>
-
-                    <td>{{ paper.id }}</td>
-                    <td>{{ paper.title }}</td>
-                    <td>{{ paper.subject }}</td>
-                    <td>{{ paper.year }}</td>
-
-                    <td>
-
-                        <div class="action-buttons">
-
-                            <a href="/question-paper/{{ paper.id }}"
-                               class="view-btn">
-                                👁️ View
+                            <a
+                                href="{{ url_for('edit_student', id=student.id) }}"
+                                class="edit-btn"
+                            >
+                                Edit
                             </a>
 
-                            <a href="/edit-question-paper/{{ paper.id }}"
-                               class="edit-btn">
-                                ✏️ Edit
-                            </a>
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_student', id=student.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this student?')"
+                            >
 
-                            <form action="/delete-question-paper/{{ paper.id }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Delete this question paper?')">
-
-                                <button type="submit"
-                                        class="delete-btn">
-                                    🗑️ Delete
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
                                 </button>
 
                             </form>
 
-                        </div>
+                        </td>
 
-                    </td>
+                    </tr>
 
-                </tr>
+                    {% endfor %}
 
-                {% endfor %}
+                </table>
 
-            </table>
+            </div>
+
+            {% else %}
+
+            <p class="empty-message">
+                No students found.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             ADD FEES
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Add Fee Record</h2>
+
+            <form
+                method="POST"
+                action="{{ url_for('fees') }}"
+            >
+
+                <label>Student Name</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    required
+                >
+
+                <label>Roll Number</label>
+
+                <input
+                    type="text"
+                    name="roll_number"
+                    required
+                >
+
+                <label>Total Fees</label>
+
+                <input
+                    type="number"
+                    step="0.01"
+                    name="total_fees"
+                    required
+                >
+
+                <label>Submitted Fees</label>
+
+                <input
+                    type="number"
+                    step="0.01"
+                    name="submitted_fees"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Save Fee
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- =========================
+             FEES LIST
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Fee Records</h2>
+
+            {% if fees %}
+
+            <div class="table-box">
+
+                <table>
+
+                    <tr>
+
+                        <th>Name</th>
+                        <th>Roll Number</th>
+                        <th>Total</th>
+                        <th>Submitted</th>
+                        <th>Remaining</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    {% for fee in fees %}
+
+                    <tr>
+
+                        <td>{{ fee.name }}</td>
+
+                        <td>{{ fee.roll_number }}</td>
+
+                        <td>{{ fee.total_fees }}</td>
+
+                        <td>{{ fee.submitted_fees }}</td>
+
+                        <td>{{ fee.remaining_fees }}</td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('edit_fee', id=fee.id) }}"
+                                class="edit-btn"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_fee', id=fee.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this fee record?')"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <p class="empty-message">
+                No fee records found.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             ADD QUESTION PAPER
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Add Question Paper</h2>
+
+            <form
+                method="POST"
+                action="{{ url_for('add_question_paper') }}"
+            >
+
+                <label>Question Paper Title</label>
+
+                <input
+                    type="text"
+                    name="title"
+                    required
+                >
+
+                <label>Subject</label>
+
+                <input
+                    type="text"
+                    name="subject"
+                    required
+                >
+
+                <label>Year</label>
+
+                <input
+                    type="text"
+                    name="year"
+                    required
+                >
+
+                <label>Questions</label>
+
+                <textarea
+                    name="questions"
+                    placeholder="Enter complete question paper here..."
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Add Question Paper
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- =========================
+             QUESTION PAPERS LIST
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Question Papers</h2>
+
+            {% if question_papers %}
+
+            <div class="table-box">
+
+                <table>
+
+                    <tr>
+
+                        <th>Title</th>
+                        <th>Subject</th>
+                        <th>Year</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    {% for paper in question_papers %}
+
+                    <tr>
+
+                        <td>{{ paper.title }}</td>
+
+                        <td>{{ paper.subject }}</td>
+
+                        <td>{{ paper.year }}</td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('view_question_paper', id=paper.id) }}"
+                                class="view-btn"
+                            >
+                                View
+                            </a>
+
+                            <a
+                                href="{{ url_for('edit_question_paper', id=paper.id) }}"
+                                class="edit-btn"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_question_paper', id=paper.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this question paper?')"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
 
             {% else %}
 
@@ -817,136 +661,368 @@
         </div>
 
 
-        <!-- REGISTERED USERS -->
+        <!-- =========================
+             CREATE TEST
+        ========================== -->
 
-        <div class="card">
+        <div class="section">
 
-            <h2>👥 Registered Users</h2>
+            <h2>Create Test</h2>
 
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search User..."
-                   onkeyup="searchTable('userSearch', 'userTable')"
-                   id="userSearch">
+            <form
+                method="POST"
+                action="{{ url_for('add_test') }}"
+            >
+
+                <label>Test Title</label>
+
+                <input
+                    type="text"
+                    name="title"
+                    required
+                >
+
+                <label>Subject</label>
+
+                <input
+                    type="text"
+                    name="subject"
+                    required
+                >
+
+
+                <div id="questions-container">
+
+                    <div class="question-box">
+
+                        <div class="question-title">
+                            Question 1
+                        </div>
+
+                        <label>Question</label>
+
+                        <textarea
+                            name="question[]"
+                            required
+                        ></textarea>
+
+                        <label>Option A</label>
+
+                        <input
+                            type="text"
+                            name="option_a[]"
+                            required
+                        >
+
+                        <label>Option B</label>
+
+                        <input
+                            type="text"
+                            name="option_b[]"
+                            required
+                        >
+
+                        <label>Option C</label>
+
+                        <input
+                            type="text"
+                            name="option_c[]"
+                            required
+                        >
+
+                        <label>Option D</label>
+
+                        <input
+                            type="text"
+                            name="option_d[]"
+                            required
+                        >
+
+                        <label>Correct Answer</label>
+
+                        <select
+                            name="correct_answer[]"
+                            required
+                        >
+
+                            <option value="A">A</option>
+
+                            <option value="B">B</option>
+
+                            <option value="C">C</option>
+
+                            <option value="D">D</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-question-btn"
+                    onclick="addQuestion()"
+                >
+                    + Add Question
+                </button>
+
+
+                <br>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Create Test
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- =========================
+             CREATED TESTS
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Created Tests</h2>
+
+            {% if tests %}
+
+            <div class="table-box">
+
+                <table>
+
+                    <tr>
+
+                        <th>Title</th>
+                        <th>Subject</th>
+                        <th>Total Questions</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    {% for test in tests %}
+
+                    <tr>
+
+                        <td>{{ test.title }}</td>
+
+                        <td>{{ test.subject }}</td>
+
+                        <td>{{ test.question_count }}</td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('edit_test', id=test.id) }}"
+                                class="edit-btn"
+                            >
+                                Edit Test
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_test', id=test.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this test and all its results?')"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete Test
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <p class="empty-message">
+                No tests created yet.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             TEST RESULTS
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Student Test Results</h2>
+
+            {% if test_results %}
+
+            <div class="table-box">
+
+                <table>
+
+                    <tr>
+
+                        <th>Student</th>
+                        <th>Test</th>
+                        <th>Subject</th>
+                        <th>Total</th>
+                        <th>Correct</th>
+                        <th>Wrong</th>
+                        <th>Timeout</th>
+                        <th>Percentage</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                    {% for result in test_results %}
+
+                    <tr>
+
+                        <td>{{ result.username }}</td>
+
+                        <td>{{ result.title }}</td>
+
+                        <td>{{ result.subject }}</td>
+
+                        <td>{{ result.total_questions }}</td>
+
+                        <td>{{ result.correct_answers }}</td>
+
+                        <td>{{ result.wrong_answers }}</td>
+
+                        <td>{{ result.timeout_answers }}</td>
+
+                        <td>{{ result.percentage }}%</td>
+
+                        <td>
+
+                            <a
+                                href="{{ url_for('test_result', id=result.id) }}"
+                                class="view-btn"
+                            >
+                                View
+                            </a>
+
+                            <a
+                                href="{{ url_for('edit_test_result', id=result.id) }}"
+                                class="edit-btn"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_test_result', id=result.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this test result?')"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <p class="empty-message">
+                No test results available.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =========================
+             REGISTERED USERS
+        ========================== -->
+
+        <div class="section">
+
+            <h2>Registered Users</h2>
 
             {% if users %}
 
-            <table id="userTable">
+            <div class="table-box">
 
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Action</th>
-                </tr>
+                <table>
 
-                {% for user in users %}
+                    <tr>
 
-                <tr>
+                        <th>Username</th>
+                        <th>Action</th>
 
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
+                    </tr>
 
-                    <td>
+                    {% for user in users %}
 
-                        <form action="/delete-user/{{ user.id }}"
-                              method="POST"
-                              onsubmit="return confirm('Delete this user?')">
+                    <tr>
 
-                            <button type="submit"
-                                    class="delete-btn">
-                                🗑️ Delete
-                            </button>
+                        <td>{{ user.username }}</td>
 
-                        </form>
+                        <td>
 
-                    </td>
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_user', id=user.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this user?')"
+                            >
 
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
-            {% else %}
-
-            <p class="empty-message">
-                No users registered yet.
-            </p>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- STUDENTS DATA -->
-
-        <div class="card">
-
-            <h2>🎓 Students Data</h2>
-
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search Student..."
-                   onkeyup="searchTable('studentSearch', 'studentTable')"
-                   id="studentSearch">
-
-            {% if students %}
-
-            <table id="studentTable">
-
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Roll Number</th>
-                    <th>Course</th>
-                    <th>Mobile Number</th>
-                    <th>Action</th>
-                </tr>
-
-                {% for student in students %}
-
-                <tr>
-
-                    <td>{{ student.id }}</td>
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.roll_number }}</td>
-                    <td>{{ student.course }}</td>
-                    <td>{{ student.mobile }}</td>
-
-                    <td>
-
-                        <div class="action-buttons">
-
-                            <a href="/edit-student/{{ student.id }}"
-                               class="edit-btn">
-                                ✏️ Edit
-                            </a>
-
-                            <form action="/delete-student/{{ student.id }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Delete this student?')">
-
-                                <button type="submit"
-                                        class="delete-btn">
-                                    🗑️ Delete
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
                                 </button>
 
                             </form>
 
-                        </div>
+                        </td>
 
-                    </td>
+                    </tr>
 
-                </tr>
+                    {% endfor %}
 
-                {% endfor %}
+                </table>
 
-            </table>
+            </div>
 
             {% else %}
 
             <p class="empty-message">
-                No student data available.
+                No users registered.
             </p>
 
             {% endif %}
@@ -954,206 +1030,82 @@
         </div>
 
 
-        <!-- FEES RECORDS -->
+        <!-- =========================
+             SIGNATURES
+        ========================== -->
 
-        <div class="card">
+        <div class="section">
 
-            <h2>💳 Fees Records</h2>
-
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search Fees..."
-                   onkeyup="searchTable('feesSearch', 'feesTable')"
-                   id="feesSearch">
-
-            {% if fees %}
-
-            <table id="feesTable">
-
-                <tr>
-                    <th>Name</th>
-                    <th>Roll Number</th>
-                    <th>Total Fees</th>
-                    <th>Submitted Fees</th>
-                    <th>Remaining Fees</th>
-                    <th>Status</th>
-                    <th>Reminder</th>
-                    <th>Action</th>
-                </tr>
-
-                {% for fee in fees %}
-
-                <tr>
-
-                    <td>{{ fee.name }}</td>
-                    <td>{{ fee.roll_number }}</td>
-                    <td>₹ {{ fee.total_fees }}</td>
-                    <td>₹ {{ fee.submitted_fees }}</td>
-                    <td>₹ {{ fee.remaining_fees }}</td>
-
-                    <td>
-
-                        {% if fee.remaining_fees == 0 %}
-
-                            <span class="paid">Paid</span>
-
-                        {% else %}
-
-                            <span class="pending">Pending</span>
-
-                        {% endif %}
-
-                    </td>
-
-
-                    <td>
-
-                        {% for student in students %}
-
-                            {% if student.roll_number == fee.roll_number %}
-
-                                <a class="whatsapp-btn"
-                                   target="_blank"
-                                   href="https://wa.me/91{{ student.mobile }}?text=Hello%20{{ student.name }}%2C%0A%0AFees%20Reminder%0A%0ARemaining%20Fees%3A%20₹{{ fee.remaining_fees }}%0A%0APlease%20submit%20your%20fees.%0A%0AThank%20You%2C%20JAY-STUDY">
-
-                                    📱 WhatsApp
-
-                                </a>
-
-                            {% endif %}
-
-                        {% endfor %}
-
-                    </td>
-
-
-                    <td>
-
-                        <div class="action-buttons">
-
-                            <a href="/edit-fee/{{ fee.id }}"
-                               class="edit-btn">
-                                ✏️ Edit
-                            </a>
-
-                            <form action="/delete-fee/{{ fee.id }}"
-                                  method="POST"
-                                  onsubmit="return confirm('Delete this fees record?')">
-
-                                <button type="submit"
-                                        class="delete-btn">
-                                    🗑️ Delete
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
-            {% else %}
-
-            <p class="empty-message">
-                No fees records available.
-            </p>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- STUDENT SIGNATURES -->
-
-        <div class="card">
-
-            <h2>✍️ Student Signatures</h2>
-
-            <input type="text"
-                   class="search-box"
-                   placeholder="🔍 Search Signature..."
-                   onkeyup="searchTable('signatureSearch', 'signatureTable')"
-                   id="signatureSearch">
+            <h2>Student Signatures</h2>
 
             {% if signatures %}
 
-            <table id="signatureTable">
+            <div class="table-box">
 
-                <tr>
-                    <th>ID</th>
-                    <th>Student Name</th>
-                    <th>Roll Number</th>
-                    <th>Signature</th>
-                    <th>Saved Date & Time</th>
-                    <th>Action</th>
-                </tr>
+                <table>
 
-                {% for signature in signatures %}
+                    <tr>
 
-                <tr>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Date</th>
+                        <th>Signature</th>
+                        <th>Action</th>
 
-                    <td>{{ signature.id }}</td>
+                    </tr>
 
-                    <td>{{ signature.student_name }}</td>
+                    {% for signature in signatures %}
 
-                    <td>{{ signature.roll_number }}</td>
+                    <tr>
 
-                    <td>
+                        <td>{{ signature.student_name }}</td>
 
-                        {% if signature.signature_data %}
+                        <td>{{ signature.roll_number }}</td>
+
+                        <td>{{ signature.created_at }}</td>
+
+                        <td>
 
                             <img
-                                src="{{ signature.signature_data | safe }}"
-                                alt="Student Signature"
-                                class="signature-image"
+                                src="{{ signature.signature_data }}"
+                                alt="Signature"
+                                style="max-width: 180px; max-height: 70px;"
                             >
 
-                        {% else %}
+                        </td>
 
-                            <span class="no-signature">
-                                No Signature Found
-                            </span>
+                        <td>
 
-                        {% endif %}
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_signature', id=signature.id) }}"
+                                class="inline-form"
+                                onsubmit="return confirm('Delete this signature?')"
+                            >
 
-                    </td>
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
+                                </button>
 
-                    <td>
-                        {{ signature.created_at }}
-                    </td>
+                            </form>
 
-                    <td>
+                        </td>
 
-                        <form action="/delete-signature/{{ signature.id }}"
-                              method="POST"
-                              onsubmit="return confirm('Delete this signature?')">
+                    </tr>
 
-                            <button type="submit"
-                                    class="delete-btn">
+                    {% endfor %}
 
-                                🗑️ Delete
+                </table>
 
-                            </button>
-
-                        </form>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
+            </div>
 
             {% else %}
 
             <p class="empty-message">
-                No signatures saved yet.
+                No signatures found.
             </p>
 
             {% endif %}
@@ -1166,127 +1118,125 @@
 
     <script>
 
-        function searchTable(inputId, tableId) {
-
-            let input = document.getElementById(inputId);
-
-            let filter = input.value.toUpperCase();
-
-            let table = document.getElementById(tableId);
-
-            let rows = table.getElementsByTagName("tr");
-
-            for (let i = 1; i < rows.length; i++) {
-
-                let text = rows[i].innerText.toUpperCase();
-
-                if (text.indexOf(filter) > -1) {
-
-                    rows[i].style.display = "";
-
-                } else {
-
-                    rows[i].style.display = "none";
-
-                }
-
-            }
-
-        }
-
-
-        function updateQuestionNumbers() {
-
-            const questions = document.querySelectorAll(".question-box");
-
-            questions.forEach(function(question, index) {
-
-                question.querySelector(".question-number").innerText =
-                    "Question " + (index + 1);
-
-            });
-
-        }
-
-
         function addQuestion() {
 
             const container =
-                document.getElementById("questionsContainer");
+                document.getElementById(
+                    "questions-container"
+                );
 
-            const questionBox =
-                document.createElement("div");
+            const questionNumber =
+                container.children.length + 1;
 
-            questionBox.className = "question-box";
 
-            questionBox.innerHTML = `
+            const questionHTML = `
 
-                <h3 class="question-number">
-                    Question
-                </h3>
+                <div class="question-box">
 
-                <textarea
-                    name="question[]"
-                    placeholder="Enter Question"
-                    required></textarea>
+                    <div class="question-title">
+                        Question ${questionNumber}
+                    </div>
 
-                <br><br>
+                    <label>Question</label>
 
-                <input type="text"
-                       name="option_a[]"
-                       placeholder="Option A"
-                       required>
+                    <textarea
+                        name="question[]"
+                        required
+                    ></textarea>
 
-                <input type="text"
-                       name="option_b[]"
-                       placeholder="Option B"
-                       required>
 
-                <br>
+                    <label>Option A</label>
 
-                <input type="text"
-                       name="option_c[]"
-                       placeholder="Option C"
-                       required>
+                    <input
+                        type="text"
+                        name="option_a[]"
+                        required
+                    >
 
-                <input type="text"
-                       name="option_d[]"
-                       placeholder="Option D"
-                       required>
 
-                <br><br>
+                    <label>Option B</label>
 
-                <input type="text"
-                       name="correct_answer[]"
-                       class="correct-answer"
-                       placeholder="Correct Answer: A / B / C / D"
-                       maxlength="1"
-                       required>
+                    <input
+                        type="text"
+                        name="option_b[]"
+                        required
+                    >
 
-                <br>
 
-                <button type="button"
+                    <label>Option C</label>
+
+                    <input
+                        type="text"
+                        name="option_c[]"
+                        required
+                    >
+
+
+                    <label>Option D</label>
+
+                    <input
+                        type="text"
+                        name="option_d[]"
+                        required
+                    >
+
+
+                    <label>Correct Answer</label>
+
+                    <select
+                        name="correct_answer[]"
+                        required
+                    >
+
+                        <option value="A">
+                            A
+                        </option>
+
+                        <option value="B">
+                            B
+                        </option>
+
+                        <option value="C">
+                            C
+                        </option>
+
+                        <option value="D">
+                            D
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="button"
                         class="remove-question-btn"
-                        onclick="removeQuestion(this)">
+                        onclick="removeQuestion(this)"
+                    >
+                        Remove Question
+                    </button>
 
-                    🗑️ Remove Question
-
-                </button>
+                </div>
             `;
 
-            container.appendChild(questionBox);
 
-            updateQuestionNumbers();
+            container.insertAdjacentHTML(
+                "beforeend",
+                questionHTML
+            );
 
         }
 
 
         function removeQuestion(button) {
 
-            const allQuestions =
-                document.querySelectorAll(".question-box");
+            const container =
+                document.getElementById(
+                    "questions-container"
+                );
 
-            if (allQuestions.length <= 1) {
+            if (
+                container.children.length <= 1
+            ) {
 
                 alert(
                     "At least one question is required!"
@@ -1296,9 +1246,38 @@
 
             }
 
-            button.closest(".question-box").remove();
+
+            button
+                .closest(".question-box")
+                .remove();
+
 
             updateQuestionNumbers();
+
+        }
+
+
+        function updateQuestionNumbers() {
+
+            const boxes =
+                document.querySelectorAll(
+                    "#questions-container .question-box"
+                );
+
+
+            boxes.forEach(
+                function(box, index) {
+
+                    const title =
+                        box.querySelector(
+                            ".question-title"
+                        );
+
+                    title.innerText =
+                        "Question " + (index + 1);
+
+                }
+            );
 
         }
 

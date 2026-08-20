@@ -1,84 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Edit Question Paper | JAY-STUDY</title>
 
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
             background: #f4f6f9;
-            margin: 0;
         }
 
         .header {
-            background: #1e3a8a;
+            background: #1e3a5f;
             color: white;
+            padding: 20px;
             text-align: center;
-            padding: 25px;
         }
 
         .container {
             width: 90%;
-            max-width: 600px;
-            margin: 40px auto;
+            max-width: 900px;
+            margin: 30px auto;
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-sizing: border-box;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1e3a5f;
+            text-align: center;
         }
 
         label {
             display: block;
-            margin-top: 15px;
+            margin-top: 18px;
+            margin-bottom: 7px;
             font-weight: bold;
+            color: #333;
         }
 
-        input {
+        input,
+        textarea {
             width: 100%;
             padding: 12px;
-            margin-top: 5px;
-            box-sizing: border-box;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 350px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        button,
+        .back-btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
         }
 
         button {
-            margin-top: 25px;
-            padding: 12px 20px;
-            background: #16a34a;
+            background: #1e3a5f;
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
 
-        a {
-            display: inline-block;
-            margin-top: 25px;
-            margin-left: 10px;
-            padding: 12px 20px;
-            background: #1e3a8a;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
+        button:hover {
+            background: #162d49;
         }
+
+        .back-btn {
+            background: #777;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background: #555;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button,
+            .back-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+        }
+
     </style>
+
 </head>
 
 <body>
 
     <div class="header">
-        <h1>📄 Edit Question Paper</h1>
+
+        <h1>JAY-STUDY</h1>
+
+        <p>Edit Question Paper</p>
+
     </div>
 
+
     <div class="container">
+
+        <h2>Edit Question Paper</h2>
+
 
         <form method="POST">
 
             <label>Question Paper Title</label>
+
             <input
                 type="text"
                 name="title"
@@ -86,7 +153,9 @@
                 required
             >
 
+
             <label>Subject</label>
+
             <input
                 type="text"
                 name="subject"
@@ -94,7 +163,9 @@
                 required
             >
 
+
             <label>Year</label>
+
             <input
                 type="text"
                 name="year"
@@ -102,17 +173,35 @@
                 required
             >
 
-            <button type="submit">
-                💾 Update Question Paper
-            </button>
 
-            <a href="/admin-panel">
-                ⬅ Back
-            </a>
+            <label>Questions</label>
+
+            <textarea
+                name="questions"
+                required
+            >{{ paper.questions }}</textarea>
+
+
+            <div class="buttons">
+
+                <button type="submit">
+                    Update Question Paper
+                </button>
+
+
+                <a
+                    href="{{ url_for('admin_panel') }}"
+                    class="back-btn"
+                >
+                    Cancel / Back
+                </a>
+
+            </div>
 
         </form>
 
     </div>
 
 </body>
+
 </html>

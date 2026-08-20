@@ -31,7 +31,7 @@
 
         .container {
             width: 90%;
-            max-width: 850px;
+            max-width: 900px;
             margin: 40px auto;
         }
 
@@ -76,6 +76,7 @@
         .result-table th {
             background: #1e3a8a;
             color: white;
+            width: 50%;
         }
 
         .correct-section,
@@ -141,34 +142,41 @@
             line-height: 1.5;
         }
 
-        .your-answer {
-            color: #dc2626;
-            font-weight: bold;
+        .answer-box {
+            padding: 12px 15px;
             margin: 10px 0;
+            border-radius: 6px;
+            line-height: 1.5;
         }
 
-        .correct-your-answer {
-            color: #16a34a;
+        .your-answer-wrong {
+            background: #fee2e2;
+            color: #b91c1c;
             font-weight: bold;
-            margin: 10px 0;
         }
 
-        .unattempted-answer {
-            color: #64748b;
+        .your-answer-correct {
+            background: #dcfce7;
+            color: #166534;
             font-weight: bold;
-            margin: 10px 0;
         }
 
-        .timeout-answer {
-            color: #d97706;
+        .your-answer-unattempted {
+            background: #f1f5f9;
+            color: #475569;
             font-weight: bold;
-            margin: 10px 0;
+        }
+
+        .your-answer-timeout {
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: bold;
         }
 
         .correct-answer {
-            color: #16a34a;
+            background: #dcfce7;
+            color: #166534;
             font-weight: bold;
-            margin: 10px 0;
         }
 
         .all-correct {
@@ -204,7 +212,7 @@
             }
 
             .result-card {
-                padding: 20px;
+                padding: 18px;
             }
 
             .percentage {
@@ -220,6 +228,11 @@
 
             .question-text {
                 font-size: 16px;
+            }
+
+            .result-table th,
+            .result-table td {
+                padding: 10px;
             }
 
         }
@@ -337,20 +350,48 @@
                     </div>
 
 
-                    <div class="correct-your-answer">
+                    <div class="answer-box your-answer-correct">
 
                         ✅ Your Answer:
 
-                        {{ item.selected_answer }}
+                        {% if item.selected_answer %}
+
+                            {{ item.selected_answer }}.
+
+                            {% if item.selected_answer == "A" %}
+                                {{ item.option_a }}
+                            {% elif item.selected_answer == "B" %}
+                                {{ item.option_b }}
+                            {% elif item.selected_answer == "C" %}
+                                {{ item.option_c }}
+                            {% elif item.selected_answer == "D" %}
+                                {{ item.option_d }}
+                            {% endif %}
+
+                        {% else %}
+
+                            Not Answered
+
+                        {% endif %}
 
                     </div>
 
 
-                    <div class="correct-answer">
+                    <div class="answer-box correct-answer">
 
                         🎯 Correct Answer:
 
-                        {{ item.correct_answer }}
+                        {{ item.correct_answer }}.
+
+                        {% if item.correct_answer == "A" %}
+                            {{ item.option_a }}
+                        {% elif item.correct_answer == "B" %}
+                            {{ item.option_b }}
+                        {% elif item.correct_answer == "C" %}
+                            {{ item.option_c }}
+                        {% elif item.correct_answer == "D" %}
+                            {{ item.option_d }}
+                        {% endif %}
 
                     </div>
 
@@ -385,22 +426,48 @@
                     </div>
 
 
-                    <div class="your-answer">
+                    <div class="answer-box your-answer-wrong">
 
                         ❌ Your Answer:
 
-                        {{ item.selected_answer
-                           if item.selected_answer
-                           else "Not Answered" }}
+                        {% if item.selected_answer %}
+
+                            {{ item.selected_answer }}.
+
+                            {% if item.selected_answer == "A" %}
+                                {{ item.option_a }}
+                            {% elif item.selected_answer == "B" %}
+                                {{ item.option_b }}
+                            {% elif item.selected_answer == "C" %}
+                                {{ item.option_c }}
+                            {% elif item.selected_answer == "D" %}
+                                {{ item.option_d }}
+                            {% endif %}
+
+                        {% else %}
+
+                            Not Answered
+
+                        {% endif %}
 
                     </div>
 
 
-                    <div class="correct-answer">
+                    <div class="answer-box correct-answer">
 
                         ✅ Correct Answer:
 
-                        {{ item.correct_answer }}
+                        {{ item.correct_answer }}.
+
+                        {% if item.correct_answer == "A" %}
+                            {{ item.option_a }}
+                        {% elif item.correct_answer == "B" %}
+                            {{ item.option_b }}
+                        {% elif item.correct_answer == "C" %}
+                            {{ item.option_c }}
+                        {% elif item.correct_answer == "D" %}
+                            {{ item.option_d }}
+                        {% endif %}
 
                     </div>
 
@@ -435,7 +502,7 @@
                     </div>
 
 
-                    <div class="unattempted-answer">
+                    <div class="answer-box your-answer-unattempted">
 
                         ⚪ Your Answer:
 
@@ -444,11 +511,21 @@
                     </div>
 
 
-                    <div class="correct-answer">
+                    <div class="answer-box correct-answer">
 
                         ✅ Correct Answer:
 
-                        {{ item.correct_answer }}
+                        {{ item.correct_answer }}.
+
+                        {% if item.correct_answer == "A" %}
+                            {{ item.option_a }}
+                        {% elif item.correct_answer == "B" %}
+                            {{ item.option_b }}
+                        {% elif item.correct_answer == "C" %}
+                            {{ item.option_c }}
+                        {% elif item.correct_answer == "D" %}
+                            {{ item.option_d }}
+                        {% endif %}
 
                     </div>
 
@@ -483,7 +560,7 @@
                     </div>
 
 
-                    <div class="timeout-answer">
+                    <div class="answer-box your-answer-timeout">
 
                         ⏰ Your Answer:
 
@@ -492,11 +569,21 @@
                     </div>
 
 
-                    <div class="correct-answer">
+                    <div class="answer-box correct-answer">
 
                         ✅ Correct Answer:
 
-                        {{ item.correct_answer }}
+                        {{ item.correct_answer }}.
+
+                        {% if item.correct_answer == "A" %}
+                            {{ item.option_a }}
+                        {% elif item.correct_answer == "B" %}
+                            {{ item.option_b }}
+                        {% elif item.correct_answer == "C" %}
+                            {{ item.option_c }}
+                        {% elif item.correct_answer == "D" %}
+                            {{ item.option_d }}
+                        {% endif %}
 
                     </div>
 
