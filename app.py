@@ -105,7 +105,7 @@ def init_db():
     """)
 
     # ==========================================
-    # NEW TEST SYSTEM TABLES
+    # TEST SYSTEM TABLES
     # ==========================================
 
     conn.execute("""
@@ -140,6 +140,22 @@ def init_db():
             wrong_answers INTEGER NOT NULL,
             percentage REAL NOT NULL,
             submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # ------------------------------------------
+    # TEST ANSWER DETAILS TABLE
+    # ------------------------------------------
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS test_answer_details (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            result_id INTEGER NOT NULL,
+            question_id INTEGER NOT NULL,
+            question TEXT NOT NULL,
+            selected_answer TEXT,
+            correct_answer TEXT NOT NULL,
+            is_correct INTEGER NOT NULL
         )
     """)
 
@@ -989,7 +1005,6 @@ def add_test():
 
         valid_question_count += 1
 
-    # Empty test save hone se bachata hai
     if valid_question_count == 0:
 
         conn.execute(
@@ -1078,6 +1093,7 @@ def submit_test(test_id):
     total_questions = len(questions)
     correct_answers = 0
 
+    # Count correct answers
     for question in questions:
 
         selected_answer = request.form.get(
@@ -1098,6 +1114,7 @@ def submit_test(test_id):
             2
         )
 
+    # Save main result
     cursor = conn.execute("""
         INSERT INTO test_results
         (
@@ -1119,6 +1136,40 @@ def submit_test(test_id):
     ))
 
     result_id = cursor.lastrowid
+
+    # Save every answer detail
+    for question in questions:
+
+        selected_answer = request.form.get(
+            f"answer_{question['id']}",
+            ""
+        ).strip().upper()
+
+        correct_answer = question[
+            "correct_answer"
+        ].upper()
+
+        is_correct = 1 if selected_answer == correct_answer else 0
+
+        conn.execute("""
+            INSERT INTO test_answer_details
+            (
+                result_id,
+                question_id,
+                question,
+                selected_answer,
+                correct_answer,
+                is_correct
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            result_id,
+            question["id"],
+            question["question"],
+            selected_answer,
+            correct_answer,
+            is_correct
+        ))
 
     conn.commit()
     conn.close()
@@ -1154,18 +1205,30 @@ def test_result(id):
         WHERE test_results.id = ?
     """, (id,)).fetchone()
 
-    conn.close()
-
     if result is None:
+        conn.close()
         return "Result Not Found!"
 
     # Student sirf apna result dekh sakta hai
     if "user" in session and result["username"] != session["user"]:
+        conn.close()
         return "You are not allowed to view this result!"
+
+    # Get incorrect question details
+    wrong_questions = conn.execute("""
+        SELECT *
+        FROM test_answer_details
+        WHERE result_id = ?
+        AND is_correct = 0
+        ORDER BY id ASC
+    """, (id,)).fetchall()
+
+    conn.close()
 
     return render_template(
         "test_result.html",
-        result=result
+        result=result,
+        wrong_questions=wrong_questions
     )
 
 
@@ -1181,17 +1244,29 @@ def delete_test(id):
 
     conn = get_db_connection()
 
-    # Pehle related questions aur results delete honge
+    # Delete related questions
     conn.execute(
         "DELETE FROM test_questions WHERE test_id = ?",
         (id,)
     )
 
+    # Delete answer details belonging to this test's results
+    conn.execute("""
+        DELETE FROM test_answer_details
+        WHERE result_id IN (
+            SELECT id
+            FROM test_results
+            WHERE test_id = ?
+        )
+    """, (id,))
+
+    # Delete related results
     conn.execute(
         "DELETE FROM test_results WHERE test_id = ?",
         (id,)
     )
 
+    # Delete test
     conn.execute(
         "DELETE FROM tests WHERE id = ?",
         (id,)
