@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
+
 app.secret_key = os.environ.get(
     "SECRET_KEY",
     "jay-study-library-secret-key-2026"
@@ -351,6 +352,20 @@ def home():
 
 
 # ==========================================
+# DATABASE CHECK
+# ==========================================
+
+@app.route("/db-check")
+def db_check():
+
+    if is_postgres():
+
+        return "POSTGRESQL DATABASE CONNECTED"
+
+    return "SQLITE DATABASE ACTIVE"
+
+
+# ==========================================
 # STUDENTS
 # ==========================================
 
@@ -491,13 +506,9 @@ def fees():
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(
-            request.form["total_fees"]
-        )
+        total_fees = float(request.form["total_fees"])
 
-        submitted_fees = float(
-            request.form["submitted_fees"]
-        )
+        submitted_fees = float(request.form["submitted_fees"])
 
         remaining_fees = total_fees - submitted_fees
 
@@ -576,13 +587,8 @@ def edit_fee(id):
         name = request.form["name"]
         roll_number = request.form["roll_number"]
 
-        total_fees = float(
-            request.form["total_fees"]
-        )
-
-        submitted_fees = float(
-            request.form["submitted_fees"]
-        )
+        total_fees = float(request.form["total_fees"])
+        submitted_fees = float(request.form["submitted_fees"])
 
         remaining_fees = total_fees - submitted_fees
 
@@ -673,9 +679,7 @@ def signature():
         db_commit(conn)
         db_close(conn)
 
-        return redirect(
-            url_for("user_panel")
-        )
+        return redirect(url_for("user_panel"))
 
     return render_template("signature.html")
 
@@ -702,9 +706,7 @@ def delete_signature(id):
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -719,9 +721,7 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        hashed_password = generate_password_hash(
-            password
-        )
+        hashed_password = generate_password_hash(password)
 
         conn = get_db_connection()
 
@@ -749,9 +749,7 @@ def register():
         db_commit(conn)
         db_close(conn)
 
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     return render_template("register.html")
 
@@ -788,9 +786,7 @@ def login():
 
             session["user"] = user["username"]
 
-            return redirect(
-                url_for("user_panel")
-            )
+            return redirect(url_for("user_panel"))
 
         return "Invalid Username or Password!"
 
@@ -806,9 +802,7 @@ def user_panel():
 
     if "user" not in session:
 
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
@@ -858,9 +852,7 @@ def view_question_paper(id):
         and "admin" not in session
     ):
 
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
@@ -891,9 +883,7 @@ def delete_user(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -906,9 +896,7 @@ def delete_user(id):
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -930,15 +918,11 @@ def admin_login():
 
             session["admin"] = True
 
-            return redirect(
-                url_for("admin_panel")
-            )
+            return redirect(url_for("admin_panel"))
 
         return "Invalid Admin Username or Password!"
 
-    return render_template(
-        "admin_login.html"
-    )
+    return render_template("admin_login.html")
 
 
 # ==========================================
@@ -950,9 +934,7 @@ def admin_panel():
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -1032,29 +1014,12 @@ def add_question_paper():
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
-    title = request.form.get(
-        "title",
-        ""
-    ).strip()
-
-    subject = request.form.get(
-        "subject",
-        ""
-    ).strip()
-
-    year = request.form.get(
-        "year",
-        ""
-    ).strip()
-
-    questions = request.form.get(
-        "questions",
-        ""
-    ).strip()
+    title = request.form.get("title", "").strip()
+    subject = request.form.get("subject", "").strip()
+    year = request.form.get("year", "").strip()
+    questions = request.form.get("questions", "").strip()
 
     if (
         not title
@@ -1086,9 +1051,7 @@ def add_question_paper():
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -1103,9 +1066,7 @@ def edit_question_paper(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -1123,25 +1084,10 @@ def edit_question_paper(id):
 
     if request.method == "POST":
 
-        title = request.form.get(
-            "title",
-            ""
-        ).strip()
-
-        subject = request.form.get(
-            "subject",
-            ""
-        ).strip()
-
-        year = request.form.get(
-            "year",
-            ""
-        ).strip()
-
-        questions = request.form.get(
-            "questions",
-            ""
-        ).strip()
+        title = request.form.get("title", "").strip()
+        subject = request.form.get("subject", "").strip()
+        year = request.form.get("year", "").strip()
+        questions = request.form.get("questions", "").strip()
 
         if (
             not title
@@ -1173,9 +1119,7 @@ def edit_question_paper(id):
         db_commit(conn)
         db_close(conn)
 
-        return redirect(
-            url_for("admin_panel")
-        )
+        return redirect(url_for("admin_panel"))
 
     db_close(conn)
 
@@ -1197,9 +1141,7 @@ def delete_question_paper(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -1212,9 +1154,7 @@ def delete_question_paper(id):
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -1226,43 +1166,17 @@ def add_test():
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
-    title = request.form.get(
-        "title",
-        ""
-    ).strip()
+    title = request.form.get("title", "").strip()
+    subject = request.form.get("subject", "").strip()
 
-    subject = request.form.get(
-        "subject",
-        ""
-    ).strip()
-
-    questions = request.form.getlist(
-        "question[]"
-    )
-
-    option_a = request.form.getlist(
-        "option_a[]"
-    )
-
-    option_b = request.form.getlist(
-        "option_b[]"
-    )
-
-    option_c = request.form.getlist(
-        "option_c[]"
-    )
-
-    option_d = request.form.getlist(
-        "option_d[]"
-    )
-
-    correct_answers = request.form.getlist(
-        "correct_answer[]"
-    )
+    questions = request.form.getlist("question[]")
+    option_a = request.form.getlist("option_a[]")
+    option_b = request.form.getlist("option_b[]")
+    option_c = request.form.getlist("option_c[]")
+    option_d = request.form.getlist("option_d[]")
+    correct_answers = request.form.getlist("correct_answer[]")
 
     if not title or not subject:
 
@@ -1373,9 +1287,7 @@ def add_test():
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -1390,9 +1302,7 @@ def edit_test(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -1419,43 +1329,16 @@ def edit_test(id):
 
     if request.method == "POST":
 
-        title = request.form.get(
-            "title",
-            ""
-        ).strip()
+        title = request.form.get("title", "").strip()
+        subject = request.form.get("subject", "").strip()
 
-        subject = request.form.get(
-            "subject",
-            ""
-        ).strip()
-
-        question_ids = request.form.getlist(
-            "question_id[]"
-        )
-
-        questions_list = request.form.getlist(
-            "question[]"
-        )
-
-        option_a_list = request.form.getlist(
-            "option_a[]"
-        )
-
-        option_b_list = request.form.getlist(
-            "option_b[]"
-        )
-
-        option_c_list = request.form.getlist(
-            "option_c[]"
-        )
-
-        option_d_list = request.form.getlist(
-            "option_d[]"
-        )
-
-        correct_answers = request.form.getlist(
-            "correct_answer[]"
-        )
+        question_ids = request.form.getlist("question_id[]")
+        questions_list = request.form.getlist("question[]")
+        option_a_list = request.form.getlist("option_a[]")
+        option_b_list = request.form.getlist("option_b[]")
+        option_c_list = request.form.getlist("option_c[]")
+        option_d_list = request.form.getlist("option_d[]")
+        correct_answers = request.form.getlist("correct_answer[]")
 
         if not title or not subject:
 
@@ -1531,9 +1414,7 @@ def edit_test(id):
         db_commit(conn)
         db_close(conn)
 
-        return redirect(
-            url_for("admin_panel")
-        )
+        return redirect(url_for("admin_panel"))
 
     db_close(conn)
 
@@ -1553,9 +1434,7 @@ def start_test(id):
 
     if "user" not in session:
 
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
@@ -1603,9 +1482,7 @@ def submit_test(test_id):
 
     if "user" not in session:
 
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
@@ -1648,9 +1525,7 @@ def submit_test(test_id):
 
     for question in questions:
 
-        question_id = str(
-            question["id"]
-        )
+        question_id = str(question["id"])
 
         selected_answer = request.form.get(
             f"answer_{question['id']}",
@@ -1742,9 +1617,7 @@ def submit_test(test_id):
 
     for question in questions:
 
-        question_id = str(
-            question["id"]
-        )
+        question_id = str(question["id"])
 
         selected_answer = request.form.get(
             f"answer_{question['id']}",
@@ -1830,9 +1703,7 @@ def test_result(id):
         and "admin" not in session
     ):
 
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
@@ -1938,9 +1809,7 @@ def edit_test_result(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -1977,24 +1846,11 @@ def edit_test_result(id):
             request.form["timeout_answers"]
         )
 
-        total_questions = result[
-            "total_questions"
-        ]
+        total_questions = result["total_questions"]
 
-        correct_answers = max(
-            0,
-            correct_answers
-        )
-
-        wrong_answers = max(
-            0,
-            wrong_answers
-        )
-
-        timeout_answers = max(
-            0,
-            timeout_answers
-        )
+        correct_answers = max(0, correct_answers)
+        wrong_answers = max(0, wrong_answers)
+        timeout_answers = max(0, timeout_answers)
 
         percentage = 0
 
@@ -2027,9 +1883,7 @@ def edit_test_result(id):
         db_commit(conn)
         db_close(conn)
 
-        return redirect(
-            url_for("admin_panel")
-        )
+        return redirect(url_for("admin_panel"))
 
     db_close(conn)
 
@@ -2051,9 +1905,7 @@ def delete_test_result(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -2074,9 +1926,7 @@ def delete_test_result(id):
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -2091,9 +1941,7 @@ def delete_test(id):
 
     if "admin" not in session:
 
-        return redirect(
-            url_for("admin_login")
-        )
+        return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
 
@@ -2129,9 +1977,7 @@ def delete_test(id):
     db_commit(conn)
     db_close(conn)
 
-    return redirect(
-        url_for("admin_panel")
-    )
+    return redirect(url_for("admin_panel"))
 
 
 # ==========================================
@@ -2143,9 +1989,7 @@ def logout():
 
     session.clear()
 
-    return redirect(
-        url_for("home")
-    )
+    return redirect(url_for("home"))
 
 
 # ==========================================
